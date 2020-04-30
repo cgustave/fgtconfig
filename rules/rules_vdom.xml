@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!-- <!DOCTYPE local_configuration SYSTEM "../DTD/rules_vdom.dtd">   -->
+
+<!DOCTYPE groups [
+<!ENTITY rules_vdom_warnings       SYSTEM "rules_vdom_warnings.xml">
+<!ENTITY rules_vdom_features       SYSTEM "rules_vdom_features.xml">
+]>
+
+<groups>
+
+   <!-- Must be processed first (set scope config.system.settings) -->
+   <group name='system' description='All system general rules'>
+	<rule id='system.settings.generic' description='system settings'>
+	   <scope path='config system settings' />
+	   <search key='opmode' default='nat' />
+	   <search key='manageip' default='' />
+           <do scopeSet='config.system.settings' />
+	</rule>
+   </group>
+
+
+
+&rules_vdom_warnings;
+&rules_vdom_features;
+
+
+<group name='end' description='ending group'>
+   <rule id='end' description='end' debug='disable'>
+   </rule>
+</group>
+
+</groups>
+
+

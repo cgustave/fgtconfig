@@ -1,0 +1,248 @@
+
+<group name='group.feature.ipsec' description='group of ispec vdom feature set' >
+
+	<!-- ipsec phase1 defined -->
+	<rule id='_ipsec_policy_based' description='ipsec policy based is used'>
+	   <scope path='config vpn ipsec phase1' loopOnEdit='yes' />
+	   <search key='interface' />
+	   <do tagSet='ipsec_policy_based_tag' />
+	</rule>
+
+	<!-- ipsec phase1-interface defined -->
+	<rule id='_ipsec_interface_based' description='ipsec interface based is used' debug='disable'>
+	   <scope path='config vpn ipsec phase1-interface' loopOnEdit='yes' />
+	   <search key='interface' />
+	   <do tagSet='ipsec_interface_based_tag' />
+	</rule>
+
+	<!-- ipsec general -->
+	<rule id='feature.ipsec' description='ipsec phase1 is defined' debug='disable'>
+	   <match rules='$_ipsec_policy_based$ OR $_ipsec_interface_based$'>
+	   </match>
+        </rule>
+</group>
+
+
+<group name='group.feature.webproxy' description='group of webproxy feature set' >
+
+	<!-- There are two possible configuration in v4, need the nextIfRuleNoMatch logic -->
+	<rule id='feature.webproxy' description='webproxy v3 or v4 is used' debug='disable'>
+	   <match release="^[34]\." logic='nextIfRuleNoMatch'>
+	      <scope path='config web-proxy global' />
+	      <search key='proxy-fqdn' default='' /> 	      
+           </match>
+
+	   <match release="^[456]\.">
+	      <scope path='config web-proxy explicit'/>
+	      <search key='status' default='disable' match='enable' /> 	      
+           </match>
+	</rule>
+
+</group>
+
+
+<group name='group.feature.wanopt' description='group of wanopt feature set' >
+
+	<rule id='feature.wanopt' description='wanoptimization is defined' debug='disable'>
+	   <scope path='config wanopt rule' loopOnEdit='yes' />
+	   <search key='status' default='enable' match='enable' />
+	</rule>
+</group>
+
+<group name='group.feature.client-reputation' description='group of client-reputation feature set' >
+
+	<rule id='feature.client-reputation' description='client-reputation is defined' debug='disable'>
+	   <scope path='config client-reputation profile'/>
+	   <search key='status' default='disable' match='enable' />
+	</rule>
+</group>
+
+<group name='group.local_in_policy' description='group of local_in_policy feature set' >
+
+	<rule id='feature.local-in-policy' description='local-in-policy is defined' debug='disable'>
+	   <scope path='config firewall local-in-policy' loopOnEdit='yes'/>
+	   <search key='status' default='enable' match='enable' />
+	</rule>
+</group>
+
+<group name='group.multicast-policy' description='group of multicast-policy feature set' >
+
+	<rule id='feature.multicast-policy' description='multicast-policy is defined' debug='disable'>
+	   <scope path='config firewall multicast-policy' loopOnEdit='yes'/>
+	   <search key='status' default='enable' match='enable' />
+	</rule>
+</group>
+
+<group name='group.tunnels' description='group of tunnels feature set' >
+
+	<rule id='feature.pptp' description='pptp is defined' debug='disable'>
+	   <scope path='config vpn pptp'/>
+	   <search key='status'  default='disable' match='enable' />
+	</rule>
+
+	<rule id='feature.gre' description='gre is defined' debug='disable'>
+	   <scope path='config system gre-tunnel' loopOnEdit='yes'/>
+	   <search key='interface'/>
+	</rule>
+
+	<rule id='feature.l2tp' description='l2tp is defined' debug='disable'>
+	   <scope path='config vpn l2tp' loopOnEdit='yes'/>
+	   <search key='status' default='disable' match='enable'/>
+	</rule>
+
+	<rule id='feature.sslvpn' description='sslvpn tunnel is defined' debug='disable'>
+	   <scope path='config vpn ssl settings'/>
+	   <search key='sslvpn-enable' default='enable' match='enable'/>
+	</rule>
+
+	<rule id='feature.wccp' description='wccp tunnel is defined' debug='disable'>
+	   <scope path='config system wccp' loopOnEdit='yes'/>
+	   <search key='router-id' />
+	</rule>
+
+	<rule id='feature.icap' description='icap tunnel is defined' debug='disable'>
+	   <scope path='config icap server' loopOnEdit='yes'/>
+	   <search key='ip-address' />
+	</rule>
+</group>
+
+<group name='authentication group' description='group of authentication feature' >
+
+        <rule id='feature.userlocal'  description='local user is defined' debug='disable'>
+	   <scope path='config user local' loopOnEdit='yes' ignoreEdit='^guest$'/>
+           <search key='status' default='enable' match='enable'/>
+	</rule>
+
+        <rule id='feature.fortitoken'  description='fortitoken is defined' debug='disable'>
+	   <scope path='config user fortitoken' loopOnEdit='yes' />
+           <search key='status' default='active' match='active'/>
+	</rule>
+
+        <rule id='feature.ldap'  description='ldap is defined' debug='disable'>
+	   <scope path='config user ldap' loopOnEdit='yes' />
+           <search key='server' />
+	</rule>
+
+        <rule id='feature.radius'  description='radius is defined' debug='disable'>
+	   <scope path='config user radius' loopOnEdit='yes' />
+           <search key='server' />
+	</rule>
+
+        <rule id='feature.tacacs'  description='tacacs is defined' debug='disable'>
+	   <scope path='config user tacacs\+' loopOnEdit='yes' />
+           <search key='server' />
+	</rule>
+
+        <rule id='feature.fsso' description='fsso is defined' debug='disable'>
+           <match logic='nextIfRuleNoMatch' >
+	      <scope path='config user fsae' loopOnEdit='yes' />
+	      <search key='server' />
+	   </match>
+	   <match>
+              <scope path='config user fsso' />
+	      <search key='server' />
+           </match>
+        </rule>
+
+</group>
+
+<group name='vip and nat group' description='group for different types of vips and nat'>
+
+        <rule id='feature.vip.standard' description='standard vip is defined'>
+	   <scope path='config firewall vip' loopOnEdit='yes'/>
+	   <search key='type' default='static-nat' match='static-nat' />
+	</rule>
+
+        <rule id='feature.vip.load-balance' description='vip load-balance is defined'>
+	   <scope path='config firewall vip' loopOnEdit='yes'/>
+	   <search key='type' default='static-nat' match='load-balance' />
+	</rule>
+
+        <rule id='feature.vip.server-load-balance' description='vip server-load-balance is defined'>
+	   <scope path='config firewall vip' loopOnEdit='yes'/>
+	   <search key='type' default='static-nat' match='load-balance' />
+	</rule>
+
+</group>
+
+
+<group name='dns group' description='group for dns features'>
+
+        <rule id='feature.dns-translation' description='dns translation is defined' debug='disable'>
+           <scope path='config firewall dnstranslation' loopOnEdit='yes'/>
+	   <search key='dst'/>
+        </rule>
+
+</group>
+
+<group name='routing group' description='group for routing features' >
+
+	<rule id='feature.identity-based-route' description='indentity-based-route is defined' >
+	   <scope path='config firewall identity-based-route' />
+	   <scope path='config rule' />
+	   <search key='gateway' nested='yes' />
+	</rule>
+
+	<rule id='feature.policy-route' description='policy routing is defined' >
+	   <scope path='config router policy' loopOnEdit='yes' />
+	   <search key='input-device' />
+	</rule>
+
+	<rule id='feature.rip' description='rip routing is defined' >
+	   <scope path='config router rip' />
+	   <scope path='config network' loopOnEdit='yes'/>
+	   <search key='prefix' />
+	</rule>
+
+	<rule id='feature.ospf' description='ospf routing is defined' debug='disable'>
+	   <scope path='config router ospf' />
+	   <scope path='config area' />
+	</rule>
+
+	<rule id='feature.isis' description='isis routing is defined' >
+	   <scope path='config router isis' />
+	   <scope path='config isis-interface' loopOnEdit='yes' />
+	   <search key='status' match='enable' />
+	</rule>
+ 
+	<rule id='feature.bgp' description='bgp routing is defined' >
+	   <scope path='config router bgp' />
+	   <scope path='config neighbor' loopOnEdit='yes' />
+	   <search key='remote-as'/>
+	</rule>
+
+	<rule id='feature.pim' description='pim routing is defined' >
+	   <scope path='config router multicast' loopOnEdit='yes'/>
+	   <search key='multicast-routing' default='enable' match='enable'/>
+	</rule>
+</group>
+
+<group name='firewall address group' description='group for firewall addresses' >
+
+	<rule id='feature.firewall.geoaddress' description='firewall geo address is defined' >
+	   <scope path='config firewall address' loopOnEdit='yes'/>
+	   <search key='type' default='ipmask' match='geography'/>
+	</rule>
+
+	<rule id='feature.firewall.fqdnaddress' description='firewall fqdn address is defined' >
+	   <scope path='config firewall address' loopOnEdit='yes'/>
+	   <search key='type' default='ipmask' match='fqdn'/>
+	</rule>
+</group>
+
+<group name='logging group' description='group for logging features'>
+
+	<rule id='feature.log.disk' description='logging to disk is defined' >
+	   <scope path='config log disk setting'/>
+	   <search key='status' default='enable' match='enable'/>
+	</rule>
+</group>
+
+<group name='transparent feature group' description='group for transparent mode features'>
+
+	<rule id='feature.tp.port-pair' description='port-pair feature is used' >
+	<scope path='config system port-pair' />
+	<search key='member' nested='yes' /> 
+	</rule>
+
+</group>

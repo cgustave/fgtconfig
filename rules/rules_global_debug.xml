@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<groups>
+
+   <group name='warn.low' description='warning severity low'>
+
+      <rule id='warn.ha-mgmt-interface' description='warn if ha-mgmt-interface is enabled' debug="disable">
+         <scope path='config system ha' />
+         <search key='ha-mgmt-interface' />
+         <do warn='HA_MGMT_INTF' toolTip="A dedicated ha management interface is configured." severity='low' />
+      </rule>
+
+   </group>
+
+</groups>

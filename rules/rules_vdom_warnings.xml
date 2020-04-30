@@ -1,0 +1,254 @@
+<!-- include all warnings -->
+
+
+<group name='vdom.warnings.high' description='vdom warnings severity high' >
+
+        <!-- record scope path -->
+	<rule id='warn.system.settings.scopeset' description='set scope of config system settings' debug='disable' >
+           <scope path ='config.system.settings' />
+           <do scopeSet='config.system.settings' />
+	</rule>
+
+	<rule id='warn.system.settings.status' description='warn if vdom status is disabled'>
+           <scope recall='config.system.settings' />
+           <search key='status' default='enable' match='disable'/>
+           <do warn='STATUS_DISABLE' toolTip='vdom has status disabled' severity='high' />
+	</rule>
+
+        <rule id='warn.ippool.nostart' description='warn if ippool has no start'>
+           <scope path='config firewall ippool' loopOnEdit='yes'/>
+           <search key='startip' default='0.0.0.0' match='0.0.0.0' />
+           <do warn='IPPOOL_WITH_STARTIP_0.0.0.0' toolTip='vdom has ippool defined with startip 0.0.0.0 (default value) causing fortigate to proxy arp on all subnets'/>
+        </rule>
+
+</group>
+
+<group name='vdom.warnings.medium' description='vdom warnings severity medium' >
+
+	<rule id='warn.system.settings.asymroute' description='warn if vdom asymetric routing is enabled' debug='disable'>
+           <scope recall='config.system.settings' />
+           <search key='asymroute' default='disable' match='enable'/>
+           <do warn='ASYMROUTE_ENABLE' toolTip='vdom has asymetric routing enabled' severity='medium' />
+	</rule>
+
+	<rule id='warn.system.settings.asymroute6' description='warn if vdom asymetric routing ipv6 is enabled'>
+           <scope recall='config.system.settings' />
+           <search key='asymroute6' default='disable' match='enable'/>
+           <do warn='ASYMROUTE6_ENABLE' toolTip='vdom has ipv6 asymetric routing disabled' severity='medium' />
+	</rule>
+
+	<rule id='warn.system.session-denied-traffic' description='warn if vdom session denied traffic is enabled (Mantis #195140)'>
+           <scope recall='config.system.settings' />
+           <search key='ses-denied-traffic' default='disable' match='enable'/>
+           <do warn='SES_DENIED_TRAF_ENABLE' toolTip='vdom has session denied traffic enabled (Mantis #195140)' severity='medium' />
+	</rule>
+
+        <rule id='warn.system.tcp-session-without-syn' description='warn if VRRP tcp-session-without-syn is enabled (Mantis #300388)' >
+           <scope recall='config.system.settings' />
+           <search key='tcp-session-without-syn' default='disable' match='enable' />
+           <do warn='TCP-SESS-WITHOUT-SYN_ENABLE' toolTip='vdom has tcp-session-without-syn enabled (Mantis #300388)' />
+        </rule>
+
+</group>
+
+<group name='vdom.warnings.low' description='vdom warnings severity low'>
+
+
+        <!-- warn if traffic logging is enabled for DISK and MEMORY Only applicable to 4.3 -->
+        <!-- in 4.3 both are defined in vdom (instead of global for syslog and faz -->
+        <!-- Using loop with $1:type_of_log  $2:default setting for traffic logging  $3: log type name for the warning flag -->
+        <loop elements='[disk,enable,DISC][memory,enable,MEM]' >
+
+           <rule id='warn.log.$1.traffic-logging.setting' description='set tagSet if traffic logging setting is enabled for $1' debug='disable'>
+               <match release="^4\.3">
+                  <scope path='config log $1 setting' />
+                  <search key='status' match='enable' default='$2' />
+                  <do tagSet='$3_4.3_setting.enable' />
+               </match>
+           </rule>
+
+           <rule id='warn.log.$1.traffic-logging.active' description='warn if log device $1 has traffic logging active' debug='disable' >
+               <match release="^4\.3" tag='$3_4.3_setting.enable'>
+                  <!-- there may be no 'config log memory filter', this means a match -->
+                  <scope path='config log $1 filter' forceMatchOnFail='yes'/>
+                  <search key='traffic' default='$2' match='enable'/>
+                  <search key='severity' match='debug|information' default='information' logic='and'/> 
+                  <do warn="4.3_TLOG_$3" />
+                  <do tagSet='4.3_TLOG_$3' />
+               </match>
+           </rule>
+
+           <!-- also flag extended traffic logging -->
+           <rule id='warn.log.$1.extended.traffic-logging' description='warn if extended traffic logging is enabled on $1' debug='disable'>
+              <match release="^4\.3" tag='4.3_TLOG_$3' >
+                  <scope path='config log $1 filter' forceMatchOnFail='yes'/>
+                  <search key='extended-traffic-log'  match='enable' default='enable' />
+                  <do warn="4.3_EXT_TLOG_$3" />
+              </match>
+           </rule>
+
+        </loop>
+
+        <rule id='warn.log.traffic-filter.resolveip' description='warn if vdom has log resove ip enable'>
+           <match release="^4\." >
+              <scope path='config log trafficfilter' />
+              <search key='resolve' match='enable' default='disable' />
+              <do warn="4.3_LOG_RESOLVE_IP" />
+           </match>
+           <match>
+              <scope path='config log setting' />
+              <search key='resolve-ip' match='enable' default='disable' />
+              <do warn="LOG_RESOLVE_IP" />
+           </match>
+        </rule>
+
+	<rule id='warn.system.settings.strict_src_check' description='warn if vdom RPF strict source checking is enabled'>
+           <scope recall='config.system.settings' />
+           <search key='strict_src_check' default='disable' match='enable'/>
+           <do warn='STRICT_SRC_CHK_ENABLE' toolTip="vdom has RPF source strict checking enabled" severity='low' />
+	</rule>
+
+	<rule id='warn.system.settings.sip-helper' description='warn if vdom kernel SIP helper is disabled'>
+           <scope recall='config.system.settings' />
+           <search key='sip-helper' default='enable' match='disable'/>
+           <do warn='SIP_HLP_DISABLE' toolTip="vdom has kernel SIP helper disabled" severity='low' />
+	</rule>
+
+	<rule id='warn.system.settings.sip-nat-trace' description='warn if vdom kernel SIP nat tracing is disabled'>
+           <scope recall='config.system.settings' />
+           <search key='sip-nat-trace' default='enable' match='disable'/>
+           <do warn='SIP_NAT_TRACE_DISABLE' toolTip="vdom has SIP NAT tracing disabled" severity='low' />
+	</rule>
+
+	<rule id='warn.system.settings.multicast-forward' description='warn if vdom multicast forwarding is enabled'>
+           <scope recall='config.system.settings' />
+           <search key='multicast-forward' default='disable' match='enable'/>
+           <do warn='MCAST_FWD_ENABLE' toolTip="vdom has multicast-forward enabled" severity='low' />
+	</rule>
+
+	<rule id='warn.system.settings.multicast-skip-policy' description='warn if vdom multicast-skip-policy is enabled'>
+           <scope recall='config.system.settings' />
+           <search key='multicast-skip-policy' default='disable' match='enable'/>
+           <do warn='MCAST_SKIP_POLICY_ENABLE' toolTip="vdom has multicast-skip-policy enabled" severity='low' />
+	</rule>
+
+	<rule id='warn.system.settings.multicast-ttl-notchange' description='warn if vdom multicast-ttl-notchange is enabled'>
+           <scope recall='config.system.settings' />
+           <search key='multicast-ttl-notchange' default='disable' match='enable'/>
+           <do warn='MCAST_TTL_NOT_CHANGED_ENABLE' toolTip="vdom has multicast-ttl-notchange enabled" severity='low' />
+	</rule>
+
+	<rule id='warn.system.settings.allow-subnet-overlap' description='warn if vdom allow subnet overlapping is enabled'>
+           <scope recall='config.system.settings' />
+           <search key='allow-subnet-overlap' default='disable' match='enable'/>
+           <do warn='SUBNET_OVERLAP_ENABLE' toolTip="vdom has allow subnet overlap enabled" severity='low' />
+	</rule>
+
+	<rule id='warn.system.settings.v4-ecmp-mode' description='warn if vdom has ecmp mode changed from default'>
+           <scope recall='config.system.settings' />
+           <search key='v4-ecmp-mode' default='source-ip-based' match='source-ip-based' negate='yes' />
+           <do warn='ECMP_MODE_MOD' toolTip="vdom has ecmp mode changed from default source-ip-based" severity='low' />
+	</rule>
+
+	<rule id='warn.system.settings.ecmp-max-paths' description='warn if vdom has ecmp max-paths changed from default'>
+           <scope recall='config.system.settings' />
+           <search key='ecmp-max-paths' default='10' match='10' negate='yes' />
+           <do warn='ECMP_MPATH=$ecmp-max-paths$' toolTip="vdom has ecmp max paths changed from default 10" severity='low' />
+	</rule>
+
+	<rule id='warn.system.settings.p2p-rate-limit' description='warn if vdom has peer-to-peer rate limit changed from default'>
+           <scope recall='config.system.settings' />
+           <search key='p2p-rate-limit' default='per-policy' match='per-policy' negate='yes' />
+           <do warn='P2PRateLimit=$p2p-rate-limit$' toolTip="vdom has peer to peer rate limit changed from default per-policy" severity='low' />
+	</rule>
+
+        <rule id='warn.per-ip-bandwidth' description='warn if vdom has per-ip-bandwidth enabled'>
+           <scope recall='config.system.settings' />
+           <search key='per-ip-bandwidth' default='disable' match='enable' />
+           <do warn='PER-IP-BW_ENABLE' toolTip="vdom has per-ip-bandwith enable" severity='low' />
+        </rule>
+
+        <rule id='feature.webproxy-forwarding' description='webproxy forwarding is used' debug='disable'>
+	   <scope path='config web-proxy forward-server' loopOnEdit='yes'/>
+	   <search key='ip' />
+           <do warn='WEBPROXY_FWD_SERVER' />
+	</rule>
+
+        <rule id='feature.virtual-wire-pair' description='virtual wire pair is used' debug='disable' >
+	   <scope path='config system virtual-wire-pair' loopOnEdit='yes'/>
+	   <search key='member' />
+	   <do warn='VIRTUAL_WIRE_PAIR' />
+	</rule>
+
+</group>
+
+<group name='modified.objects' description='warn group of important modified objects from their defaults'>
+
+	<rule id='warn.modified-schedule-always' description='warn if schedule always has been modified from default' debug='disable'>
+           <match release='^[56]\.'>
+              <scope path='config firewall schedule recurring'/>
+	      <scope edit='always'/>
+	      <search key='day' value='sunday monday tuesday wednesday thursday friday saturday'  default='sunday monday tuesday wednesday thursday friday saturday' match='sunday monday tuesday wednesday thursday friday saturday' negate='yes'/>
+	      <do warn='MODIFIED_SCHEDULE_ALWAYS' toolTip="vdom has scheduled object always modified, expect outages some days of the week !" severity='high' />
+           </match>
+	</rule>
+
+        <rule id='warn.modified-address-all-subnet' description='warn if address all has been modified from default subnet' debug='disable'>
+           <match release='^[56]\.'>
+              <scope path='config firewall address'/>
+	      <scope edit='all'/>
+	      <search key='subnet' value='0.0.0.0 0.0.0.0' default='0.0.0.0 0.0.0.0' match='0.0.0.0 0.0.0.0' negate='yes'/>
+	      <do warn='MODIFIED_FWADDR_ALL' toolTip="vdom has address object all modified, risk of unexpected policy math/no match" severity='high' />
+           </match>
+        </rule>
+
+        <rule id='warn.modified-address-all-subnet' description='warn if address all has been modified from default subnet' debug='disable'>
+           <match release='^[56]\.'>
+              <scope path='config firewall address'/>
+	      <scope edit='all'/>
+	      <search key='type' value='subnet' default='subnet' match='subnet' negate='yes'/>
+	      <do warn='MODIFIED_FWADDR_ALL' toolTip="vdom has address object all modified (type range), risk of unexpected policy math/no match" severity='high' />
+           </match>
+        </rule>
+
+
+
+
+
+
+
+</group>
+
+
+<group name='warn.profile-group' description='warn group for UTM profiles' >
+
+        <rule id='warn.profile-group' description='warn if profile group is used' >
+           <scope path='config firewall profile-group'/>
+           <do warn="PROFILE_GROUP" toolTip="vdom is using profile groups"/>
+        </rule>
+</group>
+
+
+<group name='warn.DoS.group' description='group for DoS' >
+
+	<rule id='warn.DoS.quarantine'  description='warn if DoS quarantine is used' debug='disable'>
+	   <scope path='config ips DoS' />
+	   <search key='quarantine' nested='yes' default='none' match='none' negate='yes'/>
+	   <do getKeyValue='quarantine' />
+	   <do warn='DoS_QUAR_$quarantine$' toolTip='Dos is configured to quarantine users' />
+        </rule>
+</group>
+
+
+<group name='warn.wifi' description='warn for wifi'>
+
+        <rule id='warn.wifi.wc.country.US' description='warn if wifi country is left to US'>
+	   <scope path='config wireless-controller setting' />
+	   <search key='country' default='US' match='US' />
+	   <do warn='WIFI_COUNTRY_US' toolTip='Wifi is configured with default country US' /> 
+        </rule>
+
+</group>
+
+
+

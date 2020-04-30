@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!-- <!DOCTYPE local_configuration SYSTEM "../DTD/rules_global.dtd">   -->
+<!DOCTYPE groups [
+<!ENTITY rules_global_features       SYSTEM "rules_global_features.xml">
+<!ENTITY rules_global_warnings       SYSTEM "rules_global_warnings.xml">
+]>
+
+<groups>
+
+&rules_global_features;
+&rules_global_warnings;
+
+</groups>

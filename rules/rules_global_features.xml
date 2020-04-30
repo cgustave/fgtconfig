@@ -1,0 +1,77 @@
+  <!-- ***************************************************************************************-->
+  <!-- **  A L L    G L O B A L    F E A T U R E S    A R E    D E F I N E D    B E L O W   **-->
+  <!-- ***************************************************************************************-->
+
+
+  <!-- All config system <> --> 
+
+   <group name='system' description='system general keys to retrieve (no warning)'>
+
+  <!-- Required values from 'config system global' --> 
+
+      <rule id='system.global' description='system global values' >
+         <scope path='config system global' />
+         <search key='hostname'        default="" />
+         <search key='management-vdom' default='root' />
+         <search key='vdom-admin'      default='enable' />
+         <do scopeSet='config.system.global' />'
+      </rule>
+
+  <!-- Required values from 'config system ha' --> 
+
+      <rule id='system.ha' description='system ha values' >
+         <scope path='config system ha' />
+         <search key='mode'              default='standalone' />
+         <search key='schedule'          default='roundrobin' />
+         <search key='hbdev'             default='' />
+         <do scopeSet='config.system.ha' />
+      </rule>
+
+  <!-- get log devices ip addresses --> 
+       <loop elements='[fortianalyzer,fortianalyzer][fortianalyzer2,fortianalyzer][fortianalyzer3,fortianalyzer][syslogd,syslog][syslogd2,syslog][syslogd3,syslog]'>
+
+          <rule id='logdevice.$1.ip' description='get logdevice $1' debug='disable'>
+             <match logic='nextIfRuleNoMatch'>
+             <!-- old style *4.2 or 4.1 maybe tried first, otherwise use the second possible form-->
+             <scope path='config system $1' />
+             <search key='status' default='disable' match='enable' />
+             <do getKeyValue='server' alias='$2_ip'/>
+             </match>
+
+             <match>
+             <!-- more common format --> 
+             <scope path='config log $1 setting' />
+             <search key='status' default='disable' match='enable' />
+             <do getKeyValue='server' alias='$2_ip'/>
+             </match>
+          </rule>
+
+       </loop>
+
+
+   <!-- Fortiguard -->
+      
+      <rule id='system.fortiguard.hostname' description='system fortiguard' >
+         <scope path='config system fortiguard' />
+         <search key='hostname' default="service.fortiguard.net" match="service.fortiguard.net" negate='yes'/>
+         <do scopeSet='config.system.fortiguard' />'
+      </rule>
+      <rule id='system.fortiguard.central-mgmt-status' description='fortiguard central management status' >
+         <scope path='config system fortiguard' />
+         <search key='central-mgmt-status' default="disable" match="enable"/>
+      </rule>
+      <rule id='system.fortiguard.webfilter-status' description='fortiguard webfilter status' >
+         <!-- not true in 4.2 -->
+         <scope path='config system fortiguard' />
+         <search key='webfilter-status' default="disable" match="enable"/>
+      </rule>
+      <rule id='system.fortiguard.antispam-status' description='fortiguard antispam status' >
+         <scope path='config system fortiguard' />
+         <search key='antispam-status' default="disable" match="enable"/>
+      </rule>
+      <rule id='system.fortiguard.avquery-status' description='fortiguard avquery status' >
+         <scope path='config system fortiguard' />
+         <search key='avquery-status' default="disable" match="enable"/>
+      </rule>
+   </group>
+

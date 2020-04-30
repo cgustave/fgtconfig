@@ -1,0 +1,307 @@
+  <!-- ***************************************************************************************-->
+  <!-- **  A L L    G L O B A L    W A R N I N G S    A R E    D E F I N E D    B E L O W   **-->
+  <!-- ***************************************************************************************-->
+
+  <!-- warnings : severity high --> 
+
+   <group name='warn.high' description='warning severity high'>
+
+      <rule id='warn.system.optimize' description='warn if not default optimize antivirus' >
+         <scope config='config.system.global' />
+         <search key='optimize' default='antivirus' match='antivirus' negate='yes' />
+         <do scopeSet='config.system.global' />
+         <do warn='NO_OPTIMIZE_AV' toolTip="system is not optimized for antivirus throughput. Dangerous legacy setting, should be changed!" severity='high' />
+      </rule>
+
+      <rule id='warn.system.conn-tracking' description='warn if connection tracking disabled' >
+         <scope recall='config.system.global' />
+         <search key='conn-tracking' default='enable' match='disable'/>
+         <do warn='CONNTRACK-DISABLE' toolTip="firewall connection tracking has been disabled." severity='high' />
+      </rule>
+
+      <rule id='warn.system.daily-restart' description='warn if daily restart is enabled' >
+         <scope recall='config.system.global' />
+         <search key='daily-restart' default='disable' match='enable'/>
+         <do warn='DAILY-RESTART' toolTip="daily restart is enabled. Expect reboots." severity='high' />
+      </rule>
+      <rule id='warn.system.cascade-mode' description='warn if XG2 cascade mode is enabled' >
+         <scope path='config system npu-cascade-cluster' />
+         <search key='dos-slot' />
+         <do warn='CASCADE_MODE' toolTip="DDoS XG2 cascade mode is enabled. Obsolete mode." severity='high' />
+      </rule>
+
+   </group>
+
+  <!-- warnings : severity medium  --> 
+
+   <group name='warn.medium' description='warning severity medium'>
+      <rule id='warn.ph1-rekey.disable' description='warn if ipsec phase1 rekey is disabled' >
+         <scope recall='config.system.global' />
+         <search key='phase1-rekey' default='enable' match='disable'/>
+         <do warn='PH1_REKEY_DISABLE' toolTip="IPSec phase1 rekey has been disabled. Should only be considered for workaround. Unsafe." severity='medium' />
+      </rule>
+      <rule id='warn.av-failopen-modified' description='warn if AV failopen has been modified' >
+         <scope recall='config.system.global' />
+         <search key='av-failopen' default='pass' match='pass' negate='yes'/>
+         <do warn='AV_FAILOPEN_MOD' toolTip="AV failopen has been modified from default value pass (may drop traffic upon load)." severity='medium' />
+      </rule>
+      <rule id='warn.av-failopen-session-enable' description='warn if AV failopen session has been enabled' >
+         <scope recall='config.system.global' />
+         <search key='av-failopen-session' default='disable' match='enable' />
+         <do warn='AV_FAILOPEN_SESSION' toolTip="AV failopen session has been enable (may let virus go through`)." severity='medium' />
+      </rule>
+      <rule id='warn.sp-loadbalance-enable' description='warn if SP load-balanced mode has been enabled' >
+         <scope recall='config.system.global' />
+         <search key='sp-load-balance' default='disable' match='enable' />
+         <do warn='SP_BALANCED' toolTip="SP load balanced mode has been enabled. This is XG2 legacy, should not be used anymore." severity='medium' />
+      </rule>
+      <rule id='warn.protocol-header-strict' description='warn if check-protocol-header is set strict' >
+         <scope recall='config.system.global' />
+         <search key='check-protocol-header' default='loose' match='strict' />
+         <do warn='CHK_PROTO_HEADER_STRICT_noHWacc' toolTip="check-protocol-header set to strict. Causes ESP drops and breaks HW acceleration. Only of ICSA - Ref:#113468" severity='medium' />
+      </rule>
+      <rule id='warn.miglogd-children' description='warn if default miglogd children has been changed from automatic' >
+         <scope recall='config.system.global' />
+         <search key='miglogd-children' default='0' match='^0$' negate='yes'/>
+         <do warn='MIGLOGD_CHILD:$miglogd-children$' toolTip="Default number of miglogd children process has been modified. Mantis #225899" severity='medium' />
+      </rule>
+      <rule id='warn.ip-src-port-range-modified' description='warn if default ip-src-port-range has been modified' >
+         <scope recall='config.system.global' />
+         <search key='ip-src-port-range' default='1024-25000' match='^1024-25000$' negate='yes'/>
+         <do warn='IP-SRC-PORT-RANGE:$ip-src-port-range$' toolTip="Default ip source port range has been modified. A too short range may block all connections initiated from FGT" severity='medium' />
+      </rule>
+      <rule id='warn.br-fdb-max-entry-modified' description='warn if default br-fdb-max-entry has been modified' >
+         <scope recall='config.system.global' />
+	 <search key='br-fdb-max-entry' default='8192' match='8192' negate='yes'/>
+	 <do warn='MODIFIED_br-fdb-max-entry_$br-fdb-max-entry$' toolTip='Default br-fdb-max-entry has been modified from 8192' /> 
+      </rule>
+
+      <!-- resource limit set generally for all vdom (can be overrided by vdom) -->
+     
+      <rule id='warn.global-resource-limit-session' description='warn if global resource limit for session has been set' >
+         <scope path='config system resource-limits' />
+         <search key='session' default='0' match='^0$' negate='yes'/>
+         <do warn='RES_LIMITS_SESSION:$session$' toolTip="A global resource limit for session has been set. Could limit session setup on the FGT" severity='medium' />
+      </rule>
+      <rule id='warn.global-resource-limit-dialup-tunnel' description='warn if global resource limit for dialup tunnels has been set' >
+         <scope path='config system resource-limits' />
+         <search key='dialup-tunnel' default='0' match='^0$' negate='yes'/>
+         <do warn='RES_LIMITS_DIALUP:$dialup-tunnel$' toolTip="A global resource limit for dialup tunnels has been set. Could prevent users from creating dynamic tunnels" severity='medium' />
+      </rule>
+      <rule id='warn.global-resource-limit-sslvpn' description='warn if global resource limit for sslvpn has been set' >
+         <scope path='config system resource-limits' />
+         <search key='sslvpn' default='0' match='^0$' negate='yes'/>
+         <do warn='RES_LIMITS_SSLVPN:$sslvpn$' toolTip="A global resource limit for sslvpn has been set. Could prevent users from connecting with ssl vpn" severity='medium' />
+      </rule>
+      <rule id='warn.elbc' description='warn if elbc is used' >
+         <scope path='config system elbc' />
+         <search key='mode'/>
+         <do warn='ELBC' toolTip="ELBC is configured" severity='medium' />
+      </rule>
+     <rule id='warn.log-invalid-packet' description='warn log invalid packets' >
+         <scope path='config log setting' />
+         <search key='log-invalid-packet' default='disable' match='enable'/>
+         <do warn='LOG_INVALID_PKT' toolTip="log invalid packet may generate a high log rate under attack" severity='medium' />
+      </rule>
+      <rule id='warn.log-traffic-ip' description='warn log traffic ip' >
+         <match release="^4\.">
+            <scope path='config log trafficfilter' />
+            <search key='resolve' default='disable' match='enable'/>
+         </match>
+         <match>
+            <scope path='config log setting' />
+            <search key='resolve-ip' default='disable' match='enable'/>
+         </match>
+         <do warn='LOG_RESOLVE_IP' toolTip="resolve traffic IP. Generate high DNS queries rate" severity='medium' />
+      </rule>
+      <rule id='warn.firewall.acl' description="warn if firewall acl are configured">
+         <scope path='config firewall acl'  loopOnEdit='yes'/>
+	 <search key='status' default='enable' match='enable' />
+	 <do warn='FIREWALL_ACL' toolTip='firewall acl are used' />
+      </rule>
+
+
+      <!-- NP6 features -->
+  
+      <rule id='warn.np6-hpe-enable' description='warn if NP6 HPE (host protection engine) is enabled' >
+         <scope path='config system np6' loopOnEdit='yes'  />
+         <scope path='config hpe'  />
+         <search key='type-shaper' default='disable' match='enable' />
+         <do warn='NP6_HPE_SHAPER' toolTip="Some NP6 shapers from HPE (Host Protection Engine) are enabled" />
+      </rule>
+      <rule id='warn.np6-accounting' description='warn if NP6 accounting is used' >
+         <scope path='config system np6' loopOnEdit='yes'  />
+         <search key='per-session-accounting' default='disable' match='enable'/>
+         <do warn='NP6_SESS_ACCOUNTING' toolTip="NP6 account is enable. This reduces the NP6 performance" severity='medium' />
+      </rule>
+      <rule id='warn.np6-gtse-quota' description='warn if NP6 gtse quota is enabled' >
+         <scope path='config system npu' />
+         <search key='gtse-quota' default='0G' match='0G' negate='yes' />
+         <do scopeSet='config.system.npu' /> 
+         <do warn='NP6_GTSE_QUOTA=$gtse-quota$' toolTip="NP6 GTSE QUOTA defined" />       
+      </rule>
+      <rule id='warn.np6-sw-np-shaper' description='warn if NP6 sw-np shaper is defined'>
+         <scope recall='config.system.npu' />
+         <search key='sw-np-bandwidth' default='0G' match='0G' negate='yes' />
+         <do warn='NP6_SW-NP-BW=$sw-np-bandwidth$' toolTip='NP6 SW NP shaper defined' />
+      </rule>
+
+   </group>
+
+  <!-- warnings : severity low  --> 
+
+   <group name='warn.low' description='warning severity low'>
+
+      <!-- Only applicable to 4.3 where fortianalyzer and syslogd are defined in global and not vdom (like memory and disk) -->
+      <!-- Using loop with $1:type_of_log  $2:default setting for traffic logging  $3: log type name for the warning flag --> 
+      <loop elements='[fortianalyzer,enable,FAZ][fortianalyzer2,enable,FAZ][fortianalyzer3,enable,FAZ][syslogd,disable,SYSLOG][syslogd2,disable,SYSLOG][syslogd3,disable,SYSLOG]'>
+	      <rule id='warn.log.$1.traffic-logging' description='traffic logging is enabled on $1' debug='disable'>
+		 <match release="^4\.3">
+		 <scope path='config log $1 filter' />
+		 <search key='traffic' default='$2' match='enable'/>
+		 <search key='severity' default='information' match='debug|information' logic='and'/>
+		 <do warn="$3_4.3_TLOG" />
+		 <do tagSet='$3_4.3_TLOG'/>
+		 </match>
+	      </rule>
+	      <rule id='warn.log.$1.extended.traffic-logging' description='extended traffic logging is enabled on $1' debug='disable'>
+		 <match release="^4\.3" tag='$3_4.3_TLOG'>
+		 <scope path='config log $1 filter' />
+		 <search key='extended-traffic-log' default='enable' match='enable'/>
+		 <do warn="$3_4.3_EXT_TLOG" />
+		 </match>
+	      </rule>
+      </loop>
+
+      <rule id='warn.log.local-deny' description='warn if local local deny is enabled' >
+         <scope recall='config.system.global' />
+         <search key='loglocaldeny' default='disable' match='enable'/>
+         <do warn='LOG_LOCALDENY' toolTip="local deny logging is enabled. May generate a high log rate in case of attack against FortiGate." severity='low' />
+      </rule>
+
+      <rule id='warn.reset-sessionless-tcp' description='warn if reset is sent by FortiGate when tcp session expires' >
+         <scope recall='config.system.global' />
+         <search key='reset-sessionless-tcp' default='disable' match='enable'/>
+         <do warn='RST_SESSIONLESS_TCP' toolTip="Fortigate sends reset when tcp session expires" severity='low' />
+      </rule>
+      <rule id='warn.tcp-option.disable' description='warn if tcp-option is disabled' >
+         <scope recall='config.system.global' />
+         <search key='tcp-option' default='enable' match='disable'/>
+         <do warn='TCP_OPT_DISABLE' toolTip="tcp-option has been disabled (timestamp, sack...), should only be used as a workaroud for proxy-based UTM" severity='low' />
+      </rule>
+      <rule id='warn.strict-dirty-session-check.disable' description='warn if strict-dirty-session-check is disabled' >
+         <scope recall='config.system.global' />
+         <search key='strict-dirty-session-check' default='enable' match='disable'/>
+         <do warn='STRICT_DIRTY_SES_CHK_DISABLE' toolTip="Strict dirty session check is disabled. Fix for authenticated session with redirection, see Mantis #143265" severity='low' />
+      </rule>
+      <rule id='warn.http-obfuscate.modified' description='warn if http-obfuscate has been modified from none' >
+         <scope recall='config.system.global' />
+         <search key='http-obfuscate' default='none' match='none' negate='yes'/>
+         <do warn='HTTP-OBFUSCATE-MOD' toolTip="FortiGate webserver obfuscation has been changed from none" severity='low' />
+      </rule>
+      <rule id='warn.http-admin-port-modified' description='warn if http admin port has been modified from 80' >
+         <scope recall='config.system.global' />
+         <search key='admin-port' default='80' match='^80$' negate='yes'/>
+         <do warn='HTTP:$admin-port$' toolTip="HTTP admin port has been changed from default" severity='low' />
+      </rule>
+      <rule id='warn.https-admin-port-modified' description='warn if https admin port has been modified from 443' >
+         <scope recall='config.system.global' />
+         <search key='admin-sport' default='443' match='^443$' negate='yes'/>
+         <do warn='HTTPS:$admin-sport$' toolTip="HTTPS admin port has been changed from default" severity='low' />
+      </rule>
+      <rule id='warn.ssh-admin-port-modified' description='warn if ssh admin port has been modified from 22' >
+         <scope recall='config.system.global' />
+         <search key='admin-ssh-port' default='22' match='^22$' negate='yes'/>
+         <do warn='SSH:$admin-ssh-port$' toolTip="SSH admin port has been changed from default" severity='low' />
+      </rule>
+      <rule id='warn.telnet-admin-port-modified' description='warn if telnet admin port has been modified from 23' >
+         <scope recall='config.system.global' />
+         <search key='admin-telnet-port' default='23' match='^23$' negate='yes'/>
+         <do warn='TELNET:$admin-telnet-port$' toolTip="Telnet admin port has been changed from default" severity='low' />
+      </rule>
+      <rule id='warn.firewall-implicit-logging-enabled' description='warn if firewall implicit logging is enabled' >
+         <scope recall='config.system.global' />
+         <search key='fwpolicy-implicit-log' default='disable' match='enable'/>
+         <do warn='FWPOL_IMPLICIT_LOG' toolTip="Firewall implicit logging is enabled. May cause a lot of traffic logs" severity='low' />
+      </rule>
+      <rule id='warn.firewall-ipv6-implicit-logging-enabled' description='warn if firewall implicit logging is enabled for ipv6' >
+         <scope recall='config.system.global' />
+         <search key='fwpolicy6-implicit-log' default='disable' match='enable'/>
+         <do warn='FWPOL6_IMPLICIT_LOG' toolTip="Firewall implicit logging is enabled for ipv6. May cause a lot of traffic logs" severity='low' />
+      </rule>
+
+      <rule id='warn.ha-mgmt-interface' description='warn if ha-mgmt-interface is enabled' >
+         <scope recall='config.system.ha' />
+         <search key='ha-mgmt-interface' />
+         <do warn='HA_MGMT_INTF' toolTip="A dedicated ha management interface is configured." severity='low' />
+      </rule>
+
+      <rule id='warn.ha-vcluster' description='warn if ha virtual cluster is enabled' >
+         <scope recall='config.system.ha' />
+         <search key='vcluster2' default='disable' match='enable' />
+         <do warn='VCLUSTER' toolTip="HA virtual clusters are used." severity='low' />
+      </rule>
+
+      <rule id='warn.ha-standalone-mgmt-vdom' description="warn if HA standalone-mgmt-vdom is enabled" >
+         <scope recall='config.system.ha' />
+         <search key='standalone-mgmt-vdom'  default='disable' match='enable' />
+         <do warn='HA_STANDALONE_MGMT_VDOM' toolTip="HA standalone management vdom is used (#424213) no sync if mgmt vdom + no use of HA mac" />
+      </rule>       
+
+      <rule id='warn-fortiwifi' description='warn if fortigate has a wifi interface (FortiWifi only)' >
+         <scope path='config system interface' loopOnEdit='yes' />
+         <search key='type' match='wireless'/>
+         <do warn='FORTIWIFI' toolTip='Unit has a dedicated wifi interface (FWF)' severity='low'/> 
+      </rule>
+      <rule id='warn-wireless-controller' description='warn if fortigate is wireless controller' >
+         <scope path='config wireless-controller wtp' />
+         <do warn='WIRELESS_CTRL' toolTip='Unit has a dedicated wifi interface (FWF)' severity='low'/> 
+      </rule>
+
+     <!-- can be disabled -> set status disable, see FGT_4.2_webfilter_fsae_shaping.conf, need to add flag and testit -->
+
+      <rule id='warn-central-mgmt-fmg' description='warn if central-management by FortiManager. Get fmg IP' debug='disable'>
+         <match release='^3\.'>
+            <scope path='config system fortimanager'  />
+            <search key='central-management' value='enable' default='disable' />
+            <do getKeyValue='ip' />
+         </match>
+         <match>
+            <scope path='config system central-management'  />
+            <search key='type' value='fortimanager' default='fortimanager' match='fortimanager' />
+            <do getKeyValue='fmg'  alias='ip' />
+         </match>
+         <do warn='CENTRAL_MGMT_FMG' toolTip="Central management by FortiManager" />
+      </rule>
+
+      <rule id='warn-central-mgmt-fgd' description='warn if central-management by FortiGuard. Get fmg ip' >
+         <scope path='config system central-management'  />
+         <search key='type' value='fortiguard' default='fortimanager' match='fortiguard'/>
+         <do warn='CENTRAL_MGMT_FGD' toolTip="Central management by FortiGuard (cloud)" />
+      </rule>
+
+      <rule id='warn-destination-visibility' description='warn if destination-visibility is enabled' >
+         <match release='^[56]\.'>
+            <scope path='config system network-visibility' forceMatchOnFail='yes' />
+            <search key='destination-visibility' value='enable' default='enable' match='enable'/>
+         </match>
+         <do warn="DST_VISIBILITY" toolTip="ip destination-visibility is enabled, might cause CPU increase, especially with HA (#227143, #227304)" />
+      </rule>
+      <rule id='warn-source-visibility' description='warn if source-visibility is enabled' debug='disable'>
+         <match release='^[56]\.'>
+            <scope path='config system network-visibility' forceMatchOnFail='yes' />
+            <search key='source-visibility' value='enable' default='enable' match='enable' />
+         </match>
+         <do warn="SRC_VISIBILITY" toolTip="ip source-visibility is enabled, might cause CPU increase, especially with HA (#227143, #227304)"/>
+      </rule>
+
+      <rule id='warn-npu-mismatch' description='warn if offload and host ipsec encryption mismatch in NPU setting' >
+         <scope path='config system npu'  />
+         <search key='offload-ipsec-host' default='disable' />
+         <search key='enc-offload-antireplay' default='disable' />
+	 <comparison value1='$offload-ipsec-host$' value2='$enc-offload-antireplay$' negate='yes' /> 
+	 <do warn ="NPU_ENC_MISMATCH" toolTip="enc-offload-antireplay and offload-ipsec-host should have the same setting" />
+      </rule>
+
+   </group>
+
