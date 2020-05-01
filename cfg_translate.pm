@@ -171,8 +171,9 @@ sub global_transforms {
       }
 
    #  <system_admin password="unset" />
-   my $password = $self->XMLTrsf->findvalue('/transform/global/system_admin/@password') ;
-   $self->global_system_admin($password) if ($password ne "") ;
+   my $password     = $self->XMLTrsf->findvalue('/transform/global/system_admin/@password') ;
+   my $trustedhost  = $self->XMLTrsf->findvalue('/transform/global/system_admin/@trustedhost'); 
+   $self->global_system_admin($password, $trustedhost) if (($password ne "") or ($trustedhost ne "")) ;
 
    # <system_dns primary="8.8.8.8" source-ip="unset" />
    my $primary   = $self->XMLTrsf->findvalue('/transform/global/system_dns/@primary') ;
@@ -386,11 +387,11 @@ sub global_system_virtual_switch_remove {
 sub global_system_admin {
    my $subn = "global_system_admin" ;
 
-   my $self     = shift ;
-   my $password = shift ;
+   my $self        = shift ;
+   my $password    = shift ;
+   my $trustedhost = shift ;
 
-   warn "\n* Entering $obj:$subn with password=$password" if $self->debug ;
-
+   warn "\n* Entering $obj:$subn with password=$password trustedhost=$trustedhost" if $self->debug ;
    my @scope = () ;
    $self->cfg->scope_config(\@scope, 'config system admin') ;
    $self->cfg->scope_edit(\@scope, 'edit "admin"') ;
@@ -401,8 +402,7 @@ sub global_system_admin {
          print "   o unset admin password\n" ;
          $self->unset_key(aref_scope => \@scope, key => 'password') ;
          }
-      else {
-
+      elsif ($password ne "") {
          print "   o set admin password $password\n" ;
 
          # if insertion is request, password will be inserted just after edit "admin"
@@ -415,6 +415,16 @@ sub global_system_admin {
             increment_index => 3
          ) ;
          }
+
+	  # remove all trustedhosts (unset only)	 
+      if ($trustedhost eq 'unset') {
+         print "   o unset all trustedhosts (1 to 10)\n" ;
+		 my $i ;
+		 for ($i=1, $i<11, $i++) {
+		     $self->unset_key(aref_scope => \@scope, key => 'trustedhost'.$i) ;
+		     }
+         }
+ 
       }
    else {
       print "   WARNING : no admin user found on the config\n" ;
@@ -632,12 +642,11 @@ sub global_log_fortianalyzer_setting {
 
    if ($self->cfg->feedback('found')) {
 
-      # type
+      # status
       if ($status eq "unset") {
          print "   o unset fortianalyzer setting status\n" ;
          $self->unset_key(aref_scope => \@scope, key => 'status') ;
          }
-
       elsif ($status ne "") {
          die "status can only be enable|disable|unset" if ($status !~ /enable|disable|unset/) ;
          print "   o set fortianalyzer setting status\n" ;
@@ -656,13 +665,28 @@ sub global_log_fortianalyzer_setting {
          print "   o unset fortianalyzer setting server\n" ;
          $self->unset_key(aref_scope => \@scope, key => 'server') ;
          }
-
       elsif ($server ne "") {
          print "   o set fortianalyzer setting server\n" ;
          $self->set_key(
             aref_scope      => \@scope,
             key             => 'server',
             value           => $server,
+            nb_spaces       => 4,
+            netsted         => 'NOTNESTED',
+            increment_index => 2
+         ) ;
+         }
+
+      # source-ip
+	  if ($source_ip eq "unset") {
+         print "   o unset fortianalyzer source-ip\n" ;
+         $self->unset_key(aref_scope => \@scope, key => 'source-ip') ;
+	     }
+	  elsif ($source_ip ne "") {
+         $self->set_key(
+            aref_scope      => \@scope,
+            key             => 'source-ip',
+            value           => $source_ip,
             nb_spaces       => 4,
             netsted         => 'NOTNESTED',
             increment_index => 2
@@ -689,7 +713,7 @@ sub global_system_ntp {
    if ($self->cfg->feedback('found')) {
 
       # ntpsync
-      if ($ntpsync eq "unset") {
+		if ($ntpsync eq "unset") {
          print "   o unset system ntp ntpsync\n" ;
          $self->unset_key(aref_scope => \@scope, key => 'ntpsync') ;
          }

@@ -819,12 +819,11 @@ sub _interfaces_translations {
             warn "$obj:$subn name=$name => set description $description" if $self->debug ;
             $self->_interface_description_change(interface => $name, description => $description) ;
             }
-	     # Change description without name translation is allowed
+	     # Change alias without name translation is allowed
          if ($alias ne "") {
             warn "$obj:$subn name=$name => set alias $alias" if $self->debug ;
             $self->_interface_alias_change(interface => $name, alias => $alias) ;
             }
-	 
          }
       }
 

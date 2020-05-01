@@ -446,3 +446,306 @@ Notes:
    </match>
 </rule>
 ```
+
+## translate
+
+#### Description :
+
+translate.pl is a command line tool to process a defined list of configuration changes on a fortigate configuration file.
+In Tecnical Support, replication of customer's environment in FortiPoC requires a significant work for preparing the configuration for FortiPoc. Each time a new problem is reported, a minimum of 3 Fortigate configurations need to be processed to inserted to POC with a high potential of human errors. 
+
+#### Usage :
+
+`translate.pl -config <fgt_config.conf> -transform <transform_file.xml> [ -debug <level>]`
+
+Takes the given fortigate source file 'fgt_config.conf' as source and apply the transformation rules defined in the xml transform file 'transform_file.xml'
+
+```xml
+options :
+    - config <fgt_config.conf >       : FortiGate source configuration file (.conf) 
+	- transform <transform_file.xml>  : Transform file is an xml file containing the transform rules
+    - debug <level>                   : (optional) for troubleshooting purpose
+```
+
+#### Transform file:
+
+The transform file is an xml file organized in sections where it transform is defined as an xml leaf.  
+
+Sections are :
+- **options**   : Options for processions, for instance to only extract some vdoms from the original file.  
+- **global**    : Transformations applied at the global level of a fortigate configuation.  
+- **all_vdoms** : Transformations at vdom level, on all vdoms.  
+- **vdoms**     : Transformations at vdom level, only on the given vdom.  
+
+Below is a sample of an empty transform file showing the sections  
+It can be used as a template.  
+
+```xml
+<?xml-stylesheet type="text/xsl" href="translate.xsl"?>
+
+<transform>
+
+   <!-- General option for configuration file processing -->
+   <options>
+   </options>
+
+<!-- Transforms at the global level-->
+   <global>
+   </global>
+
+   <!-- Transforms at the the vdom level, applied to all vdoms-->
+   <all_vdoms>
+   </all_vdoms>
+
+   <!-- Transforms at the the vdom level, applied only to selected vdoms-->
+   <vdoms>
+      <vdom name='root'>
+      </vdom>
+   </vdoms>
+</transform>
+```
+
+
+#### Supported transform operations:
+
+##### Systematic transforms
+
+- **changing config header :**  This is the first line of fortigate configuration, need to change model, type and admin user (with admin). KVM type is automatically set.  
+   Example:  
+  `#config-version=FG100E-6.2.3-FW-build1066-191218:opmode=0:vdom=0:user=robert`  
+  is automatically changed to:  
+  `#config-version=FGVMK6-6.2.3-FW-build1066-191218:opmode=0:vdom=0:user=admin`
+
+- **remove non physical ha heartbeat interfaces** : After transforms are applied, some ha heartbeat interfaces may have turned to non-physical devices (like loopback). In this case, the heart-beat interface is removed.
+
+##### Options section transforms
+
+- **selective vdom extraction**: Only selects and extracts the vdoms provided in the list from the original configuration.  
+   Useful if only a few vdoms are revelevants from a many-vdom orginal configuration.
+   ```xml
+   <vdom_filter list="vdom1|vdom2|...|vdomn" />
+   ```
+
+##### Global section tranforms
+
+
+- **config global** : admintimeout, alias, gui-theme (green*|neutrino|blue|melongene|mariner), admin ports, timezone code.  
+   ```xml
+   <system_global admintimeout="475" alias="HUB2" gui-theme="neutrino" admin-port="80" admin-sport="443" admin-ssh-port="22" timezone="28" /> 
+   ```
+- **admins profile** : set/uset password, set/unset trustedhosts.  
+   ```xml
+   <system_admin password="unset" trusted_host="unset" />
+   ```
+
+- **system dns** : change primary and secondary dns server, set/unset the source-ip.  
+   ```xml
+   <system_dns primary="192.168.0.253" secondary="192.168.0.254" source-ip="unset" />
+   ```
+
+- **physical switch** : Removes the complete `config system physical-switch` block.  
+   ```xml
+   <system_physical-switch action="remove"/>
+   ```
+
+- **virtual switch** : Removes the complete `config system virtual-switch` block.  
+   ```xml
+   <system_physical-switch action="remove"/>
+   ```
+
+- **system ha** : set/unset password,  set group-id, set/unset monitor.  
+	```xml
+	<system_ha password="unset" group-id="1" monitor="unset"/>
+	```
+
+- **system central-management** : set/unset type (none|fortiguard|fortimanager|unset), set/unset soure-ip.  
+   ```xml
+   <system_central-management type="none" fmg-source-ip="unset" />
+   ```
+
+- **log fortianalyzer settings** : set/unset status (enable|disable|unset), set/unser server. set/unset source-ip.   
+	```xml
+	<log_fortianalyzer_setting status="enable" source-ip="unset" server="192.168.0.252"/>
+
+	```
+
+- **system ntp**: set/unset ntpsync (unset|enable|disable), set server, unset source-ip.  
+	```xml
+	<system_ntp ntpsync="enable" source-ip="unset" server='"ntp.pool.org"'/>
+	```
+
+- **system netflow**: set collector-ip, set/unset source-ip.  
+	```xml
+	<system_netflow collector-ip="192.168.0.254" source-ip="unset" />
+	```
+
+###### Interfaces processing
+
+Processing changes on the interfaces. All interfaces processing are groupd in a global subsection 'system_interfaces':
+```xml
+<global>
+   <system_interfaces ignored_physical_action="translate_to_loopback">
+      <port action="<action>" name="<port_name>" />
+      <port action="<action>" name="<port_name>" />
+
+</global>
+```
+
+* Different 'actions' can be defined (see below)
+  - **translate** : changes the name or the type of interface. The 'speed' statement is also automatically removed. 
+  - **configure** : add, remove or modify configuration statements from the interface.
+  - **keep**      : no translation applied for this interface.
+
+* A default behaviour can be selected for all the interfaces that were not concerned by translation/configurations.  
+  If action="keep" is specified for a particular interface, no default behavior would be applied to it.  
+
+  **"ignored_physical_action"** :  
+    - **none**                  : Default. Nothing is done.
+    - **ignore**                : Interface is renamed with a specific 'ignore pattern' __IGNORE__<interface>_ in the configuration.  
+	                              Upon loading the configuration, config statements containing the ignore interface would be deleted.  
+	                              Warning : This could cause a cascade of config statement deletion.  
+    - **translate_to_loopback** : Untouched interfaces are translated to loopback.  
+	                              Warning : This may still lead to config losses. For instance, a loopback cannot be member of a zone, so if the origin interface is part of a zone, the zone object would be lost and all the cascade of config statements using this zone.  
+								
+    - **translate_to_vdlink**   : Untouched interfaces are translated to dummy inter-vdom-link named 'ign_interface'.  
+	                            This should avoid any configuration loss.  
+* **tunnel_status**: (disable|enable)
+Optional. If the configuration has a lot of ipsec tunnels and you only need couple in the test, it is a good idea to bring all IPsec tunnel down in the first place, then use`<'action='configure' status='up' />`  to change the status for the ones you need.
+
+
+
+* **action='translate'** : Translates interface name and some of interfaces attributes:  
+
+  - **name**        : Original interface name (mandatory)
+  - **type**        : Original interface type ('physical' by default)
+  - **dst_name**    : Desired replacement name (not mandatory)
+  - **dst_type**    : Desired replacement interface type (default 'physical'). It the chosen destination type is a vdom-link, it is also created.
+  - **description** : Set interface description attribut. This is usefull to keep the name of the former interface for instance)
+  - **alias**       : Set interface alias. Another handy way to keep track of role or previous interface name
+
+
+* **action='keep'** : Consider the interface 'touched' so the ignore_physical_action is not applied:
+
+  - **name**        : Original interface name (mandatory)
+  - **description** : Set interface description attribut. This is usefull to keep the name of the former interface for instance)
+  - **alias**       : Set interface alias. Another handy way to keep track of role or previous interface name
+
+
+* **action='configure'** : Add, remore or update interface properties:
+
+  - **name**        : Original interface name (mandatory). If not found, a new physical interface with this name is created.
+  - **status**      : Set status (up|down) 
+  - **description** : Set description
+  - **alias**       : Set alias
+  - **ip**          : Set ip 
+  - **vlanid**      : Set vlanid
+  - **allowaccess** : Set allowaccess
+  - **vdom**        : Set vdom 
+
+**Examples of system_interface transforms** :
+
+```xml
+ <system_interfaces ignored_physical_action="translate_to_loopback" >
+         <port action="keep" name="port10"/>
+         <port action="translate" name="port19" dst_name="port2" description="former port19"  />
+         <port action="translate" name="port22"  dst_name="LB_HC_VPN" dst_type="loopback" description="former port22"/>
+         <port action="translate" name="port23"  dst_name="port7" description="former port23"  />
+         <port action="translate" name="port25"  dst_name="port5" description="former port25"  />
+         <port action="translate" name="port26"  dst_name="port6" description="former port26"  />
+         <port action="translate" name="port28"  dst_name="port3" description="former port28"  />
+         <port action="translate" name="port29"  dst_name="port1" description="former port29"  />
+         <port action="translate" name="port30"  dst_name="port8" description="former port30"  />
+         <port action="translate" name="port31"  dst_name="port9" description="former port31"  />
+
+         <port action="translate" name="npu0_vlink0" type="npu"  dst_name="vlink0_0" dst_type="vdom-link"  description="former npu0_vlink0" />
+         <port action="translate" name="npu0_vlink1" type="npu"  dst_name="vlink0_1" dst_type="vdom-link"  description="former npu0_vlink1" />
+         <port action="translate" name="npu1_vlink0" type="npu"  dst_name="vlink1_0" dst_type="vdom-link"  description="former npu1_vlink0" />
+         <port action="translate" name="npu1_vlink1" type="npu"  dst_name="vlink1_1" dst_type="vdom-link"  description="former npu1_vlink1" />
+
+         <port action="configure" name="port10" alias="FPOC"  ip="192.168.0.4 255.255.255.0"  allowaccess="https ping ssh" description="FPOC OOB"/>
+      </system_interfaces>
+
+```
+
+
+##### all_vdoms section tranforms
+
+Applies transforms on all vdoms
+
+- **firewall policy** : remove 'auto-asic-offload' statements on all policies
+```xml
+<firewall_policy auto-asic-offload="unset" /> 
+```
+
+- **vpn ipsec phase1-interface** : set 'psksecret' on all vdoms phase1s
+```xml
+<vpn_ipsec_phase1-interface psksecret="fortinet" />
+```
+
+- **firewall address group** :  limits the number of element in all firewall address groups. This may be needed if the source file is  from a unit  allowing more members in its table-size compared to the VM
+```xml
+<firewall_addrgrp max_size="255" />
+```
+ 
+
+
+##### vdoms section tranforms
+
+Applies transforms on specific vdoms
+
+So far, no transforms have been implemented on this section.
+
+
+
+##### Example of a complete transform file
+
+```xml
+<?xml-stylesheet type="text/xsl" href="translate.xsl"?>
+<transform>
+
+   <options>
+   </options>
+
+   <global>
+      <system_global admintimeout="475" />
+      <system_admin password="unset" />
+      <system_ha password="unset" group-id="1" monitor="unset" />
+      <system_dns primary="8.8.8.8" source-ip="unset" />
+      <system_central-management type="none" fmg-source-ip="unset" />
+      <log_fortianalyzer_setting status="enable" source-ip="unset" />
+      <system_ntp ntpsync="enable" source-ip="unset" server='"ntp.pool.org"'/>
+      <system_netflow collector-ip="192.168.0.254" source-ip="unset" />
+      <system_interfaces ignored_physical_action="translate_to_vdlink" tunnel_status="disable" >
+         <port action="keep" name="port10"/>
+         <port action="translate" name="port17"  dst_name="port4" description="former port17"  />
+         <port action="translate" name="port19"  dst_name="port2" description="former port19"  />
+         <port action="translate" name="port22"  dst_name="ADMIN" dst_type="loopback" description="former port22"/>
+         <port action="translate" name="port23"  dst_name="port7" description="former port23"  />
+         <port action="translate" name="port25"  dst_name="port5" description="former port25"  />
+         <port action="translate" name="port26"  dst_name="port6" description="former port26"  />
+         <port action="translate" name="port28"  dst_name="port3" description="former port28"  />
+         <port action="translate" name="port29"  dst_name="port1" description="former port29"  />
+         <port action="translate" name="port30"  dst_name="port8" description="former port30"  />
+         <port action="translate" name="port31"  dst_name="port9" description="former port31"  />
+
+         <port action="translate" name="npu0_vlink0" type="npu"  dst_name="vlink0_0" dst_type="vdom-link"  description="former npu0_vlink0" />
+         <port action="translate" name="npu0_vlink1" type="npu"  dst_name="vlink0_1" dst_type="vdom-link"  description="former npu0_vlink1" />
+         <port action="translate" name="npu1_vlink0" type="npu"  dst_name="vlink1_0" dst_type="vdom-link"  description="former npu1_vlink0" />
+         <port action="translate" name="npu1_vlink1" type="npu"  dst_name="vlink1_1" dst_type="vdom-link"  description="former npu1_vlink1" />
+
+         <port action="configure" name="TUNNEL1"     status="up" />
+         <port action="configure" name="TUNNEL2"    status="up" />
+         <port action="configure" name="port10" alias="FPOC"  ip="192.168.0.1 255.255.255.0"  allowaccess="https ping ssh" description="FPOC OOB"/>
+      </system_interfaces>
+   </global>
+
+   <all_vdoms>
+      <firewall_policy auto-asic-offload="unset" />
+   </all_vdoms>
+
+   <vdoms>
+   </vdoms>
+
+</transform>
+
+```
