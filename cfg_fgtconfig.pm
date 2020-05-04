@@ -334,6 +334,22 @@ sub analyse {
 
    }
 
+
+# ---
+
+sub pre_split_processing {
+   my $subn = "pre_split_processing" ;
+
+   my $self    = shift ;
+   my %options = @_ ;
+   my $nouuid  = $options{'nouuid'} ;
+
+   warn "*Entering $obj:$subn with nouuid=$nouuid" if $self->debug() ;
+
+   my @scope = (1, $self->cfg->max_lines) ;
+   $self->cfg->delete_all_keys_from_block(aref_scope => \@scope, key => 'uuid') ;
+   }
+
 # ---
 
 sub splitconfig {

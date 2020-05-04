@@ -937,12 +937,18 @@ sub splitconfig_vdoms {
       print $fh_out $self->cfg->line(1) ;
       print $fh_out $self->cfg->line(2) ;
       print $fh_out $self->cfg->line(3) ;
-      print $fh_out "\n\n" ;
 
       for (my $line = $startindex ; $line < $endindex ; $line++) {
          warn "$obj:$subn processing vdom $vdom, line=$line" if $self->debug() ;
-         print $fh_out $self->cfg->line($line) ;
-         }
+
+         # During pre-processing, lines may have been removed (like uuid), ignore them
+		 if ($self->cfg->line($line) =~ /^\n/) {
+            warn "$obj:$subn empty line at index=".$line if $self->debug ;
+		    }
+		 else {
+            print $fh_out $self->cfg->line($line) ;
+            }
+	     }
       close $fh_out ;
       }
    }

@@ -753,7 +753,8 @@ sub scope_config {
 sub scope_edit {
    my $subn = "_scope_edit" ;
 
-   # Withing a start/end index (like the vdom), specify a config statement
+   # Within a start/end index (like the vdom), specify a config statement
+   # Return a key if asked
 
    my $self           = shift ;
    my $aref_scope     = shift ;

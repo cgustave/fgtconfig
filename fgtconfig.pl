@@ -6,7 +6,7 @@ use Getopt::Long ;
 use cfg_fgtconfig ;
 use cfg_configstats ;
 
-use vars qw ($debug $config $routing $ipsec $splitconfig $color $html $stats $fullstats $ruledebug $help) ;
+use vars qw ($debug $config $routing $ipsec $splitconfig $color $html $stats $fullstats $ruledebug $nouuid $help) ;
 use lib "." ;
 
 GetOptions(
@@ -20,6 +20,7 @@ GetOptions(
    "html"          => \$html,
    "stats"         => \$stats,
    "fullstats"     => \$fullstats,
+   "nouuid"        => \$nouuid,
    "help"          => \$help
 ) ;
 
@@ -31,6 +32,7 @@ $stats      = defined($stats)     ? 1 : 0 ;
 $fullstats  = defined($fullstats) ? 1 : 0 ;
 $routing    = defined($routing)   ? 1 : 0 ;
 $ipsec      = defined($ipsec)     ? 1 : 0 ;
+$nouuid     = defined($nouuid)      ? 1 : 0 ;
 
 if ($help) {
    print_help();
@@ -71,6 +73,9 @@ if (defined($splitconfig)) {
 
    $fgtconfig->splitconfigdir($splitconfig) ;
 
+   # Pre-split processing
+   $fgtconfig->pre_split_processing(nouuid => $nouuid) ;
+
    # Creates one file per vdom and FGTconfig file
    $fgtconfig->splitconfig($config) ;
    }
@@ -95,8 +100,10 @@ Selection options:
 
 [ Operation selection ]
 
-   -splitconfig                                                 : split config in multiple vdom config archive with summary file
    -fullstats                                                   : create report for each vdom objects for build comparison
+
+   -splitconfig                                                 : split config in multiple vdom config archive with summary file
+   -nouuid                                                      : split config option to remove all uuid keys (suggest. no)
 
 
 Display options:

@@ -10,8 +10,8 @@ I have made this tool for my own use. It can be used at your own risk.
 Cedric GUSTAVE
 
 ##### Branches :
-It is recommended to use the 'release' branch. The 'master' branch is mainly used for development and may be not always working.
-
+It is recommended to use the 'release' branch. The 'master' branch is mainly used for development and may be not always working.  
+`git clone -b release git://github.com/cgustave/fgtconfig.git`
 
 
 #### Description : 
@@ -470,6 +470,7 @@ Cedric GUSTAVE
 
 ##### Branches :
 It is recommended to use the 'release' branch. The 'master' branch is mainly used for development and may be not always working.
+`git clone -b release git://github.com/cgustave/fgtconfig.git`
 
 #### Description :
 

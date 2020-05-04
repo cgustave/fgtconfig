@@ -380,8 +380,6 @@ sub global_system_virtual_switch_remove {
       }
    }
 
-
-
 # ---
 
 sub global_system_admin {
