@@ -2,10 +2,22 @@
 
 ## fgtconfig
 
+##### Disclaimer :
+This tool is not a Fortinet official product. It is provided as-is without official support.  
+I have made this tool for my own use. It can be used at your own risk.  
+
+##### Author :
+Cedric GUSTAVE
+
+##### Branches :
+It is recommended to use the 'release' branch. The 'master' branch is mainly used for development and may be not always working.
+
+
+
 #### Description : 
 
 This tool takes a FortiGate configuration file as input and produces a configuration summary dashboard.
-It also warns on potential unusual, non-expected, potentially harmful or simply an important characteristic of the configuration.
+It also warns on potential unusual, non-expected, potentially harmful or simply important characteristics of the configuration.
 The dashboard output detail can be changed based on given options. Display may be adjusted to fit with XTERM colours. An HTMLizer allows HTML based coloring.
 The option -splitconfig is used to split a multi-vdom configuration into separated vdom files (and the summary)
 Additional statistics on configuration objects can be extracted with option -stat
@@ -39,7 +51,7 @@ Display options:
 #### Rules
 
 The analysis of the configuration file is based on rules. Rules are defined in an xml format, stored in a directory name 'rules'  
-Rules are organised in different files. 'global' are rules for global objects while 'vdom' are rules applied to each vdoms.  
+Rules are organized in different files. 'global' are rules for global objects while 'vdom' are rules applied to each vdoms.  
 Rules 'warnings' are rules to raise user attention with some warning messages.  
 Rules 'features' are used to identify when some features are used, they are used to display the summary report.  
 
@@ -94,7 +106,7 @@ Rules are organised in groups. Groups don't change the rule reference, it is onl
 </loop>
 ```
 
-This loop will go through 6 iterations where $1 and $2 would be replaced with the following values:
+Example : this loop will go through 6 iterations where $1 and $2 would be replaced with the following values:
 ```
    1 :    $1='fortianalyzer'  ;   $2='fortinet'
    2 :    $1='fortianalyzer2' ;   $2='fortinet'  
@@ -113,8 +125,8 @@ This loop will go through 6 iterations where $1 and $2 would be replaced with th
 - **id='my_id'** : used as unique reference for the rule (and as search element for result feedback) - mandatory
     Should be unique even amongst all the rule groups
 - **description='my_description'** : A 'human' description of what this rule is catching - mandatory
-- **comment='my_comment'** : Optional. Provides more references, for instance mantis bug #. multiple comment lines should be allowed.
-- **debug=[disable\*|enable]** : for debuging purpose, debug can be activate for this rule from the rules file
+- **comment='my_comment'** : Optional. Provides more references, for instance bug #. multiple comment lines should be allowed.
+- **debug=[disable\*|enable]** : for debuging purpose, debug can be activated for this rule from the rules file
 
 ------
 
@@ -122,7 +134,7 @@ This loop will go through 6 iterations where $1 and $2 would be replaced with th
 `<match [tag='my_tag1' noTag='my_tag' rules='xxxxx' release='my_release_re'  buildMin='min' buildMax='max' logic='stopOnMatch*|nextIfRuleNoMatch' ] >`
 
 - Encloses part4 (scoping statements), part5 (condition statement) and optionally part6 items
-  Allow to apply a different rules based on different pre-match filters such as release.
+  Allows to apply a different rules based on different pre-match filters such as release.
   Multiple <match> are allowed with a 'stop-on-match' behavior
   Eventually, a <match> without other attribute can used as a last 'catch-all'
   Pre-matching attributes can be combined in one single match statement. If so, all must be true to match (AND)
@@ -448,6 +460,16 @@ Notes:
 ```
 
 ## translate
+
+##### Disclaimer :
+This tool is not a Fortinet official product. It is provided as-is without official support.  
+I have made this tool for my own use. It can be used at your own risk.  
+
+##### Author :
+Cedric GUSTAVE
+
+##### Branches :
+It is recommended to use the 'release' branch. The 'master' branch is mainly used for development and may be not always working.
 
 #### Description :
 

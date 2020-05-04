@@ -283,9 +283,6 @@ sub max_lines {
 
 # ---
 
-
-# ---
-
 sub insert {
    my $subn = "insert" ;
 
