@@ -3,20 +3,31 @@
 ## fgtconfig
 
 ##### Disclaimer :
-This tool is not a Fortinet official product. It is provided as-is without official support.  
+This is not a Fortinet official product. It is provided as-is without official support.  
 I have made this tool for my own use. It can be used at your own risk.  
 
 ##### Author :
 Cedric GUSTAVE
 
-##### Branches :
-It is recommended to use the 'release' branch. The 'master' branch is mainly used for development and may be not always working.  
-`git clone -b release git://github.com/cgustave/fgtconfig.git`
+##### Install :
+- use **'release'** branch from github  
+  The 'master' branch is mainly used for development and may not be always working.  
+  `git clone -b release git://github.com/cgustave/fgtconfig.git`
 
+- vim integration : map a command `:Fgtconfig` to open the config summary:  
+  In the ~/.vimrc:  
+  ~~~
+  :function! Func_fgtconfig()
+  :       let mycmd = "w! /tmp/fgtconfig.txt"
+  :       execute mycmd
+  :       ! (clear && cd ~/github/perl/fgtconfig && ./fgtconfig.pl -config /tmp/fgtconfig.txt -routing -ipsec -stat -color)
+  :endfunction
+  :command -nargs=0 Fgtconfig call Func_fgtconfig()
+  ~~~
 
 #### Description : 
 
-This tool takes a FortiGate configuration file as input and produces a configuration summary dashboard.
+fgtconfig.pl is a command line tool taking a FortiGate configuration file as input and produces a configuration summary dashboard.
 It also warns on potential unusual, non-expected, potentially harmful or simply important characteristics of the configuration.
 The dashboard output detail can be changed based on given options. Display may be adjusted to fit with XTERM colours. An HTMLizer allows HTML based coloring.
 The option -splitconfig is used to split a multi-vdom configuration into separated vdom files (and the summary)
@@ -91,7 +102,7 @@ Rules are organised in groups. Groups don't change the rule reference, it is onl
 
 ###### Rules syntax
 
-**Part1 : looping statement:**  
+**Part 1 : looping statement:**  
 `<loop  elements="['aaa','bbb','ccc']['ddd','eee','ffff']..." )`
 
 - Encloses multiple rules
@@ -118,7 +129,7 @@ Example : this loop will go through 6 iterations where $1 and $2 would be replac
 
 ------
 
-**Part2 : Definition:**  
+**Part 2 : Definition:**  
 `<rule id='my_id' description='my_description' [ comment='my_comment' debug=disable*|enable] >)`
 
 - Encloses the full rule definition
@@ -130,7 +141,7 @@ Example : this loop will go through 6 iterations where $1 and $2 would be replac
 
 ------
 
-**Part3 : Pre-matching filters:**  
+**Part 3 : Pre-matching filters:**  
 `<match [tag='my_tag1' noTag='my_tag' rules='xxxxx' release='my_release_re'  buildMin='min' buildMax='max' logic='stopOnMatch*|nextIfRuleNoMatch' ] >`
 
 - Encloses part4 (scoping statements), part5 (condition statement) and optionally part6 items
@@ -157,7 +168,7 @@ Example : this loop will go through 6 iterations where $1 and $2 would be replac
 
 ------
 
-**Part4 : Scoping statements** :  
+**Part 4 : Scoping statements** :  
 `<scope>` 
 - List of selection statements applied successively in the given order to define/refine the scoping in the config file.
    Note : global or vdom scope : not needed as the rules are split in 2 files (global_rules.xml, vdom_rules.xml)
@@ -175,7 +186,7 @@ Example : this loop will go through 6 iterations where $1 and $2 would be replac
 
 ------
 
-**Part5 : search statements**:  
+**Part 5 : search statements**:  
 `<search key='key' [ match='regexp_of_value_to_match'  default='default_value' negate=yes|no* nested=yes|no* logic=or*|and ]>`
 
 -  List of required conditions for a match in the given scope.
@@ -194,7 +205,7 @@ Example : this loop will go through 6 iterations where $1 and $2 would be replac
 
 ------
 
-**Part6 : comparison statement**:  
+**Part 6 : comparison statement**:  
 `<compare>`
 
 - compare 2 values : 'value1' and 'value2'. Both values can use variables. If matching, the rules has matches and the following <do> statements will be applied.  
@@ -210,7 +221,7 @@ Example : this loop will go through 6 iterations where $1 and $2 would be replac
 
 ------
 
-**Part7 : Action list** :  
+**Part 7 : Action list** :  
 `<do>`
 
 - List of all actions required when a rule has matched 
@@ -420,7 +431,6 @@ Notes:
 
 ```xml
 <rule id='modified.schedule.always' description='check if default always schedule was modified' />
-     <comment>There is a suspicion of a non identified manip/bug that may cause this</comment>
      <scope path='config firewall schedule recurring' />
      <scope edit='always'  />
      <search key='day'
@@ -462,15 +472,16 @@ Notes:
 ## translate
 
 ##### Disclaimer :
-This tool is not a Fortinet official product. It is provided as-is without official support.  
+This is not a Fortinet official product. It is provided as-is without official support.  
 I have made this tool for my own use. It can be used at your own risk.  
 
 ##### Author :
 Cedric GUSTAVE
 
-##### Branches :
-It is recommended to use the 'release' branch. The 'master' branch is mainly used for development and may be not always working.
-`git clone -b release git://github.com/cgustave/fgtconfig.git`
+##### Install:
+- Use **'release'** branch.  
+  The 'master' branch is mainly used for development and may be not always working.  
+  `git clone -b release git://github.com/cgustave/fgtconfig.git`
 
 #### Description :
 
