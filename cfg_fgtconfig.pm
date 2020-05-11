@@ -975,8 +975,12 @@ sub _interfaces_configurations {
 	  my $vlanid      = $node->findvalue('./@vlanid') ;
       my $allowaccess = $node->findvalue('./@allowaccess') ;
       my $description = $node->findvalue('./@description') ;
+	  # lacp specific
+	  my $member      = $node->findvalue('./@member');
+	  my $lacpmode    = $node->findvalue('./@lacp-mode');
+	  my $minlinks    = $node->findvalue('./@min-links');
 
-      warn "$obj:$subn name=$name status=$status alias=$alias vdom=$vdom vlanid=$vlanid ip=$ip allowaccess=$allowaccess description=$description" if $self->debug ;
+      warn "$obj:$subn name=$name status=$status alias=$alias vdom=$vdom vlanid=$vlanid ip=$ip allowaccess=$allowaccess description=$description member=$member lacpmode=$lacpmode minlinks=$minlinks" if $self->debug ;
 
       # Sanity
       die "name needed" if ($name eq "") ;
@@ -1045,6 +1049,25 @@ sub _interfaces_configurations {
          $self->set_key(aref_scope => \@scope, key => 'vdom', value => "\"" . $vdom . "\"", nb_spaces => 8) ;
          }
 
+	  # LACP related
+	  if ($member ne "") {
+		  warn "$obj:$subn name=name => set member $member" if $self->debug ;
+	      print "   o set lag interface $name member $member\n" ;
+		  $self->set_key(aref_scope => \@scope, key => 'member', value => $member, nb_spaces => 8, index_increment => 5 ) ;
+	      }
+
+	  if ($lacpmode ne "") {
+		  warn "$obj:$subn name=name => set lacp-mode $lacpmode" if $self->debug ;
+	      print "   o set lag interface $name lacp-mode $lacpmode\n" ;
+		  die "lacp-mode can only be static, passive or active"
+		    if $lacpmode !~ /static|passive|active/ ;
+		  $self->set_key(aref_scope => \@scope, key => 'lacp-mode', value => $lacpmode, nb_spaces => 8, index_increment => 5) ;
+	      }
+	  if ($minlinks ne "") {
+		  warn "$obj:$subn name=name => set min-links $minlinks" if $self->debug ;
+	      print "   o set lag interface $name min-links $minlinks\n" ;
+		  $self->set_key(aref_scope => \@scope, key => 'min-links', value => $minlinks, nb_spaces => 8, index_increment => 5) ;
+	      }
       }
    }
 
