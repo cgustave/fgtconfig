@@ -702,7 +702,7 @@ Optional. If the configuration has a lot of ipsec tunnels and you only need coup
          <port action="translate" name="npu1_vlink0" type="npu"  dst_name="vlink1_0" dst_type="vdom-link"  description="former npu1_vlink0" />
          <port action="translate" name="npu1_vlink1" type="npu"  dst_name="vlink1_1" dst_type="vdom-link"  description="former npu1_vlink1" />
 
-		 <port action="configure" name="LAG"    lacp-mode="static" min-links="1" member="port1">
+         <port action="configure" name="LAG"    lacp-mode="static" min-links="1" member="port1">
          <port action="configure" name="port10" alias="FPOC"  ip="192.168.0.4 255.255.255.0"  allowaccess="https ping ssh" description="FPOC OOB"/>
       </system_interfaces>
 
