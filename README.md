@@ -1,4 +1,4 @@
-# fgtconfig  and  translate
+#global_system_virtual_switch_remove fgtconfig  and  translate
 
 ## fgtconfig
 
@@ -584,7 +584,7 @@ It can be used as a template.
 
 - **virtual switch** : Removes the complete `config system virtual-switch` block.  
    ```xml
-   <system_physical-switch action="remove"/>
+   <system_virtual-switch action="remove"/>
    ```
 
 - **system ha** : set/unset password,  set group-id, set/unset monitor.  
