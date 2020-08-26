@@ -572,9 +572,9 @@ It can be used as a template.
    <system_admin password="unset" trusted_host="unset" />
    ```
 
-- **system dns** : change primary and secondary dns server, set/unset the source-ip.  
+- **system dns** : change primary and secondary dns server, set/unset the source-ip, set/unset dns-over-tls  
    ```xml
-   <system_dns primary="192.168.0.253" secondary="192.168.0.254" source-ip="unset" />
+   <system_dns primary="192.168.0.253" secondary="192.168.0.254" source-ip="unset" dns-over-tls="unset"/>
    ```
 
 - **physical switch** : Removes the complete `config system physical-switch` block.  

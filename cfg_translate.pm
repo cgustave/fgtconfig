@@ -176,11 +176,12 @@ sub global_transforms {
    $self->global_system_admin($password, $trustedhost) if (($password ne "") or ($trustedhost ne "")) ;
 
    # <system_dns primary="8.8.8.8" source-ip="unset" />
-   my $primary   = $self->XMLTrsf->findvalue('/transform/global/system_dns/@primary') ;
-   my $secondary = $self->XMLTrsf->findvalue('/transform/global/system_dns/@secondary') ;
-   my $source_ip = $self->XMLTrsf->findvalue('/transform/global/system_dns/@source-ip') ;
-   $self->global_system_dns($primary, $secondary, $source_ip)
-     if (($primary ne "") or ($secondary ne "") or ($source_ip ne "")) ;
+   my $primary      = $self->XMLTrsf->findvalue('/transform/global/system_dns/@primary') ;
+   my $secondary    = $self->XMLTrsf->findvalue('/transform/global/system_dns/@secondary') ;
+   my $source_ip    = $self->XMLTrsf->findvalue('/transform/global/system_dns/@source-ip') ;
+   my $dns_over_tls = $self->XMLTrsf->findvalue('/transform/global/system_dns/@dns-over-tls');
+   $self->global_system_dns($primary, $secondary, $source_ip, $dns_over_tls)
+     if (($primary ne "") or ($secondary ne "") or ($source_ip ne "") or ($dns_over_tls ne "")) ;
 
    # remove hardware-switch
    my $hswitch_action = $self->XMLTrsf->findvalue('/transform/global/system_physical-switch/@action') ;
@@ -434,12 +435,13 @@ sub global_system_admin {
 sub global_system_dns {
    my $subn = "global_system_dns" ;
 
-   my $self      = shift ;
-   my $primary   = shift ;
-   my $secondary = shift ;
-   my $source_ip = shift ;
+   my $self         = shift ;
+   my $primary      = shift ;
+   my $secondary    = shift ;
+   my $source_ip    = shift ;
+   my $dns_over_tls = shift ;
 
-   warn "\n* Entering $obj:$subn with primary=$primary secondary=$secondary source_ip=$source_ip" if $self->debug ;
+   warn "\n* Entering $obj:$subn with primary=$primary secondary=$secondary source_ip=$source_ip dns_over_tls=$dns_over_tls" if $self->debug ;
 
    my @scope = () ;
    $self->cfg->scope_config(\@scope, 'config system dns') ;
@@ -477,6 +479,7 @@ sub global_system_dns {
             }
 
          else {
+			print "   o set dns source-ip $source_ip\n" ;
             $self->set_key(
                aref_scope      => \@scope,
                key             => 'source-ip',
@@ -488,6 +491,23 @@ sub global_system_dns {
             }
          }
 
+	  if ($dns_over_tls ne "") {
+		  if ($dns_over_tls eq "unset") {
+			  print "   o unset dns-over-tls\n" ;
+			  $self->unset_key(aref_scope => \@scope, key => 'dns-over-tls') ;
+		      }
+		  else {
+			  print "   o set dns-over-tls $dns_over_tls\n" ;
+              $self->set_key(
+               aref_scope      => \@scope,
+               key             => 'dns-over-tls',
+               value           => $dns_over_tls,
+               nb_spaces       => 4,
+               netsted         => 'NOTNESTED',
+               increment_index => 3
+              ) ;
+		      }
+		  }
       }
    else {
       print "   WARNING : can't find config system dns\n" ;
