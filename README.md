@@ -731,11 +731,34 @@ Applies transforms on all vdoms
 
 
 ##### vdoms section tranforms
-
 Applies transforms on specific vdoms
 
-So far, no transforms have been implemented on this section.
+```xml
+<transform>
+   <vdoms>
+       <vdom name="root">
+       ...all vdoms config for root here..
+       </vdom>
+   </vdoms>
+</transform>
+~
+```
 
+###### virtual-wan-link
+Apply transforms to sdwan configuration (6.2). Warning 6.4 not supported (config system sdwan)
+
+- **health-check** : 
+
+```xml
+       <vdom name="root">
+           <system_virtual-wan-link>
+              <health-check name="SLA_DC_LAN">
+                 <sla id="1" latency-treshold="100" jitter-threshold="120" packetloss-threshold="5" />
+              </health-check>
+          </system_virtual-wan-link>
+       </vdom>
+```
+Change sdwan health-check sla settings (use "unset" or set a value)
 
 
 ##### Example of a complete transform file
