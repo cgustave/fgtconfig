@@ -31,13 +31,21 @@ my %object_stats_list = (
    sys_dhcp_server => 'config system dhcp server',
    sys_zone        => 'config system zone',
 
+   sys_np6            => 'config system np6',
+   sys_snmp_community => 'config system snmp community',
+
+   sys_central_management => 'config system central-management',
+   sys_session_sync       => 'config system session-sync',
+
    # Admins
    sys_admin      => 'config system admin',
+   sys_admin_accprofile => 'config system accprofile',
 
    # Users
    user_local      => 'config user local',
    user_fortitoken => 'config user fortitoken',
    user_group      => 'config user group',
+
 
    # Firewall ipv4
    fw_addr       => 'config firewall address',
@@ -59,6 +67,21 @@ my %object_stats_list = (
    fw_multicast_address => 'config firewall multicast-address',
    fw_DoS_policy  => 'config firewall DoS-policy',
    fw_sniffer     => 'config firewall sniffer',
+
+   # Routing
+   rt_static         => 'config router static',
+   rt_multicast      => 'config router multicast',
+   rt_route_map      => 'config router route-map',
+   rt_prefix_list    => 'config router prefix-list',
+   rt_access_list    => 'config router access-list',
+
+   rt_bgp            => 'config router bgp',
+   rt_community_list => 'config router community-list',
+   rt_ospf           => 'config router ospf',
+   rt_ospf6          => 'config router ospf6',
+   rt_rip			 => 'config router rip',
+   rt_ripng			 => 'config router ripng',
+   rt_isis           => 'config router isis',
 
    # Endpoint control
    ep_profile     => 'config endpoint-control profile',
@@ -110,7 +133,9 @@ my %object_stats_list = (
    sf_iptrust        => 'config spamfilter iptrust',
    sf_profile        => 'config spamfilter profile',
 
-   # VPN SSL
+   # VPN 
+   vpn_certificate_ca => 'config vpn certificate ca',
+   vpn_certificate_local => 'config vpn certificate local',
    vpn_ssl_web_portal => 'config vpn ssl web portal',
 
    # IPsec interface mode

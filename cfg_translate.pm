@@ -1006,11 +1006,28 @@ my $subn = "virtual_wan_link_health_check" ;
 
    warn "\n* Entering $obj:$subn with vdom=$vdom" if $self->debug() ;
    foreach my $hc_node ($$ref_nodes->findnodes('./health-check')) {
-      my $hc_name = $hc_node->findvalue('@name') ;
-      print "     o healthcheck name=$hc_name\n";
+      my $hc_name    = $hc_node->findvalue('@name') ;
+	  my $hc_server  = $hc_node->findvalue('@server') ;
+	  my $hc_members = $hc_node->findvalue('@members') ; 
+
+      print "     o healthcheck name=$hc_name\n" ;
 
 	  if ($self->cfg->scope_config($ref_scope, 'config health-check') and ($self->cfg->feedback('found'))) {
 	     if ($self->cfg->scope_edit($ref_scope, "edit \"$hc_name\"") and $self->cfg->feedback('found')) {
+
+			# Change server
+            if ($hc_server ne "") {
+               print "     o set server $hc_server\n" ;
+               $self->set_key(aref_scope =>  $ref_scope, key =>'server', value => $hc_server, nb_spaces => 12, increment_index => 1) ;
+			   }
+
+			# Members
+			if ($hc_members ne "") {
+			   print "     o set members $hc_members\n" ;
+               $self->set_key(aref_scope =>  $ref_scope, key =>'members', value => $hc_members, nb_spaces => 12, increment_index => 1) ;
+               }
+
+			# Change SLA config 
   	        $self->virtual_wan_link_hc_sla($vdom, $ref_scope, \$hc_node);
 		    }
 		 else {
@@ -1057,7 +1074,7 @@ my $subn = "virtual_wan_link_hc_sla" ;
 			      }
 			   else {
 			      print "       o set latency-threshold $latency_treshold\n";
-			      $self->set_key(aref_scope =>  $ref_scope, key =>'latency-threshold', value=>$latency_treshold, nb_spaces => 20, increment_index => 1) 
+			      $self->set_key(aref_scope =>  $ref_scope, key =>'latency-threshold', value=>$latency_treshold, nb_spaces => 20, increment_index => 1) ;
 			      }
 
 			   # jitter

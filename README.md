@@ -752,13 +752,13 @@ Apply transforms to sdwan configuration (6.2). Warning 6.4 not supported (config
 ```xml
        <vdom name="root">
            <system_virtual-wan-link>
-              <health-check name="SLA_DC_LAN">
+              <health-check name="SLA_DC_LAN" server="8.8.8.8" members="1 2">
                  <sla id="1" latency-treshold="100" jitter-threshold="120" packetloss-threshold="5" />
               </health-check>
           </system_virtual-wan-link>
        </vdom>
 ```
-Change sdwan health-check sla settings (use "unset" or set a value)
+Change sdwan health-check server, members and its sla settings (use "unset" or set a value)
 
 
 ##### Example of a complete transform file
