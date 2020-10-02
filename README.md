@@ -59,7 +59,34 @@ Display options:
     -ruledebug               : rule parsing debug
 ~~~
 
-#### Rules
+When 
+#### Configuration full statistics
+
+
+This option is used to compared 2 FortiGate configuration before and after a software upgrade. 
+When run with `-fullstats` a report counting all vdoms objects is displayed.
+With multi-vdom configuration, the first part of the report is a vdom by vdom object count while the second part is the overall count for all vdoms.
+Vdoms and objects are sorted alphabitically so 2 reports for instance before and after and upgrade can eaisly be compared with a text diff editor.
+Report sample extract:
+
+~~~
+~/github/perl/fgtconfig (master *)$ ./fgtconfig.pl -config configsamples/fwf60a-simple.conf -fullstats
+Statistics by vdoms : vdom_name, object, count
+----------------------------------------------
+
+root            antivirus_profile               2
+root            app_list                        0
+root            dlp_filepattern                 0
+root            dlp_fp_sensitivity              0
+root            dlp_sensor                      5
+root            ep_profile                      1
+root            fw_DoS_policy                   0
+root            fw_DoS_policy6                  0
+root            fw_addr                         18
+../..
+~~~
+
+#### Configuration analyses from rules
 
 The analysis of the configuration file is based on rules. Rules are defined in an xml format, stored in a directory name 'rules'  
 Rules are organized in different files. 'global' are rules for global objects while 'vdom' are rules applied to each vdoms.  
