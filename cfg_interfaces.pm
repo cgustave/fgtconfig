@@ -20,36 +20,37 @@ use constant NOTNESTED => 0 ;
 
 has 'cfg' => (isa => 'cfg_dissector', is => 'rw') ;
 
-has 'vd' => (isa => 'cfg_vdoms', is => 'rw') ;
+has 'vd'    => (isa => 'cfg_vdoms',  is => 'rw') ;
 has 'debug' => (isa => 'Maybe[Int]', is => 'rw', default => '0') ;
 
 my %hash_interface = (
-   vdom                    => 'root',
-   type                    => '',
-   interface               => '',
-   mode                    => 'static',
-   status                  => 'up',
-   speed                   => 'auto',
-   vlanid                  => '',
-   ip                      => '',
-   allowaccess             => '',
-   alias                   => '',
-   description             => '',
-   gwdetect                => 'disable',    # 4.3 only
-   detectserver            => '',           # 4.3 only
-   'forward-domain'        => '',
-   'mtu-override'          => 'disable',
-   wccp                    => 'disable',
-   log                     => 'disable',
-   'sflow-sampler'         => 'disable',
-   'ips-sniffer-mode'      => 'disable',
-   ipmac                   => 'disable',
-   'spillover-threshold'   => '0',
-   'device-identification' => 'disable',    # blocks acceleration when enabled
-   'ipv6'                  => 0,
-   'vrrp'                  => 0,
-   inbandwidth             => 0,
-   outbandwidth            => 0,
+   vdom                     => 'root',
+   type                     => '',
+   interface                => '',
+   mode                     => 'static',
+   status                   => 'up',
+   speed                    => 'auto',
+   vlanid                   => '',
+   ip                       => '',
+   allowaccess              => '',
+   alias                    => '',
+   description              => '',
+   gwdetect                 => 'disable',    # 4.3 only
+   detectserver             => '',           # 4.3 only
+   'forward-domain'         => '',
+   'mtu-override'           => 'disable',
+   wccp                     => 'disable',
+   log                      => 'disable',
+   'sflow-sampler'          => 'disable',
+   'ips-sniffer-mode'       => 'disable',
+   ipmac                    => 'disable',
+   'spillover-threshold'    => '0',
+   'device-identification'  => 'disable',    # blocks acceleration when enabled
+   'ipv6'                   => 0,
+   'vrrp'                   => 0,
+   inbandwidth              => 0,
+   outbandwidth             => 0,
+   'egress-shaping-profile' => '',
 ) ;
 
 # ---
@@ -282,7 +283,7 @@ sub concat {
 sub get_all_aggregate_redundant_switch_array {
    my $subn = "get_all_aggregate_redundant_switch_array" ;
 
-   my $self = shift ;
+   my $self   = shift ;
    my @sorted = sort { $a cmp $b } keys(%{$self->{_AGGREDSW}}) ;
    return (@sorted) ;
    }
@@ -354,7 +355,7 @@ sub parse_interfaces {
 
    my $self = shift ;
 
-   my @scope = (undef, undef) ;
+   my @scope      = (undef, undef) ;
    my @edit_scope = () ;
    warn "\n* Entering $obj:$subn" if $self->debug() ;
 
@@ -403,7 +404,7 @@ sub set_interface_defaults {
    warn "\n* Entering $subn with interface=$interface" if $self->debug() ;
 
    foreach my $attr (
-      qw /alias wccp zone mode vlanid ip network broadcast status gwdetect mtu-override allowaccess log sflow-sampler ips-sniffer-mode ipmac spillover-threshold device-identification ipv6 vrrp inbandwidth outbandwidth/
+      qw /alias wccp zone mode vlanid ip network broadcast status gwdetect mtu-override allowaccess log sflow-sampler ips-sniffer-mode ipmac spillover-threshold device-identification ipv6 vrrp inbandwidth outbandwidth egress-shaping-profile /
      )
    {
       $self->set(name => $interface, key => $attr, value => "") ;
@@ -504,13 +505,13 @@ sub parse_interface_ipv6 {
    my $ok = $self->cfg->scope_config($aref_scope, 'config ipv6') ;
    if ($ok) {
       $autoconf = $self->cfg->get_key($aref_scope, 'autoconf', 'NOTNESTED', 'disable') ;
-      $result = 1 if ($autoconf ne 'disable') ;
+      $result   = 1 if ($autoconf ne 'disable') ;
 
-      $mode = $self->cfg->get_key($aref_scope, 'mode', 'NOTNESTED', 'static') ;
+      $mode   = $self->cfg->get_key($aref_scope, 'mode', 'NOTNESTED', 'static') ;
       $result = 1 if ($mode ne 'static') ;
 
       $address = $self->cfg->get_key($aref_scope, 'ip6-address', 'NOTNESTED', '::/0') ;
-      $result = 1 if ($address ne '::/0') ;
+      $result  = 1 if ($address ne '::/0') ;
 
       warn "$obj:$subn (autoconf=$autoconf mode=$mode address=$address ) => result=$result" if $self->debug() ;
 
@@ -612,14 +613,14 @@ sub update_interfaces {
       if ($self->{_INTERFACE}->{$key}->{gwdetect} eq 'enable') {
          $self->{_INTERFACE}->{$key}->{gwdetect} = 'X' ;
          }
-      else { $self->{_INTERFACE}->{$key}->{gwdetect} = '' }
+      else { $self->{_INTERFACE}->{$key}->{gwdetect} = ''  }
 
       # only show mtu-override enabled with 'X'
       $self->{_INTERFACE}->{$key}->{'mtu-override'} = '' if (not(defined($self->{_INTERFACE}->{$key}->{'mtu-override'}))) ;
       if ($self->{_INTERFACE}->{$key}->{'mtu-override'} eq 'enable') {
          $self->{_INTERFACE}->{$key}->{'mtu-override'} = 'X' ;
          }
-      else { $self->{_INTERFACE}->{$key}->{'mtu-override'} = '' }
+      else { $self->{_INTERFACE}->{$key}->{'mtu-override'} = ''  }
 
       # Raise device-identity feature
       if (defined($self->{_INTERFACE}->{$key}->{'device-identification'})) {
@@ -647,7 +648,7 @@ sub update_aggregate_redundant_hardswitch {
    my $self      = shift ;
    my $interface = shift ;
 
-   my @scope = (undef, undef) ;
+   my @scope        = (undef, undef) ;
    my $scope_config = undef ;
 
    warn "\n* Entering $obj:$subn with interface=$interface" if $self->debug() ;
@@ -657,10 +658,11 @@ sub update_aggregate_redundant_hardswitch {
    my $edit = "edit \"" . $interface . "\"" ;
    $self->cfg->scope_edit(\@scope, $edit) ;
    $self->cfg->scope_config(\@scope, 'port') ;    # config port
-   my $id = "" ;
+   my $id         = "" ;
    my @edit_scope = (undef, undef) ;
    $edit_scope[0] = $scope[0] ;
    $edit_scope[1] = $scope[1] ;
+
    while ($self->cfg->scope_edit(\@edit_scope, 'edit', \$id)) {
       warn "$obj:$subn processing port=$id" if $self->debug() ;
       $id =~ s/\"//g if (defined($id)) ;
@@ -684,7 +686,7 @@ sub update_aggregate_redundant_switch {
    my $interface = shift ;
    my $type      = shift ;
 
-   my @scope = (undef, undef) ;
+   my @scope        = (undef, undef) ;
    my $scope_config = undef ;
 
    warn "\n* Entering $obj:$subn with interface=$interface and type=$type" if $self->debug() ;
@@ -895,17 +897,17 @@ sub interface_flags {
    # Add one space char to separate physical interface to flags
    $type .= " " if ($self->{_INTERFACE}->{$interface}->{interface} ne "") ;
 
-   if ($self->{_INTERFACE}->{$interface}->{type} eq 'tunnel')      { $type .= '[T]' }
-   if ($self->{_INTERFACE}->{$interface}->{type} eq 'vdom-link')   { $type .= '[VL]' }
-   if ($self->{_INTERFACE}->{$interface}->{type} eq 'aggregate')   { $type .= '[A]' }
-   if ($self->{_INTERFACE}->{$interface}->{type} eq 'redundant')   { $type .= '[R]' }
-   if ($self->{_INTERFACE}->{$interface}->{type} eq 'switch')      { $type .= '[SW]' }
-   if ($self->{_INTERFACE}->{$interface}->{type} eq 'vap-switch')  { $type .= '[VSW]' }
-   if ($self->{_INTERFACE}->{$interface}->{type} eq 'hard-switch') { $type .= '[HSW]' }
-   if ($self->{_INTERFACE}->{$interface}->{type} eq 'loopback')    { $type .= '[LO]' }
+   if ($self->{_INTERFACE}->{$interface}->{type} eq 'tunnel')      { $type .= '[T]'  }
+   if ($self->{_INTERFACE}->{$interface}->{type} eq 'vdom-link')   { $type .= '[VL]'  }
+   if ($self->{_INTERFACE}->{$interface}->{type} eq 'aggregate')   { $type .= '[A]'  }
+   if ($self->{_INTERFACE}->{$interface}->{type} eq 'redundant')   { $type .= '[R]'  }
+   if ($self->{_INTERFACE}->{$interface}->{type} eq 'switch')      { $type .= '[SW]'  }
+   if ($self->{_INTERFACE}->{$interface}->{type} eq 'vap-switch')  { $type .= '[VSW]'  }
+   if ($self->{_INTERFACE}->{$interface}->{type} eq 'hard-switch') { $type .= '[HSW]'  }
+   if ($self->{_INTERFACE}->{$interface}->{type} eq 'loopback')    { $type .= '[LO]'  }
 
    # Flag wccp interface
-   if ($self->{_INTERFACE}->{$interface}->{wccp} eq 'enable') { $type .= '[WCCP]' }
+   if ($self->{_INTERFACE}->{$interface}->{wccp} eq 'enable') { $type .= '[WCCP]'  }
 
    # Flag logging enabled at interface level
    if ($self->{_INTERFACE}->{$interface}->{log} eq 'enable') {
@@ -959,11 +961,16 @@ sub interface_flags {
 
    # Flag inbandwith and outbandwidth
    if ($self->{_INTERFACE}->{$interface}->{'inbandwidth'} ne '0') {
-      $type .= "[INBW]" ;
+      $type .= "[InBW]" ;
       }
 
    if ($self->{_INTERFACE}->{$interface}->{'outbandwidth'} ne '0') {
-      $type .= "[OUTBW]" ;
+      $type .= "[OutBW]" ;
+      }
+
+   # Flag interface with shaping profile
+   if ($self->{_INTERFACE}->{$interface}->{'egress-shaping-profile'} ne '') {
+      $type .= "[SHP]" ;
       }
 
    return $type ;
@@ -1026,7 +1033,7 @@ sub ipcidr_network_broadcast {
 
    if (not($ipmask) eq '') {
       my @ip_mask = split(/\s/, $ipmask) ;
-      my $ipnet = new Net::Netmask($ip_mask[0], $ip_mask[1]) ;
+      my $ipnet   = new Net::Netmask($ip_mask[0], $ip_mask[1]) ;
       push @return, $self->cidr($ipmask) ;
       push @return, $ipnet->base() ;
       push @return, $ipnet->broadcast() ;
