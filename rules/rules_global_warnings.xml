@@ -116,9 +116,14 @@
       </rule>
       <rule id='warn.firewall.acl' description="warn if firewall acl are configured">
          <scope path='config firewall acl'  loopOnEdit='yes'/>
-	 <search key='status' default='enable' match='enable' />
-	 <do warn='FIREWALL_ACL' toolTip='firewall acl are used' />
-      </rule>
+	     <search key='status' default='enable' match='enable' />
+	     <do warn='FIREWALL_ACL' toolTip='firewall acl are used' />
+     </rule>
+	 <rule id='warn.config-interface-shaping' description="warn if config interface shaper-profile is used (see flag [SHP])" severity='medium'>
+		 <scope path='config system interface' looOnEdit='yes' />
+		 <search key='egress-shaping-profile' default='None' match='None' negate='yes' />
+		 <do warn='INTF_SHAPING_PROF' toolTip="Interface shaping profile exists on one interface" severity='medium' />
+	</rule>
 
 
       <!-- NP6 features -->
