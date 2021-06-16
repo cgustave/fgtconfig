@@ -139,7 +139,6 @@ sub config_header {
       $self->fos_carrier("CARRIER") ;
       }
    else { $self->fos_carrier("")  }
-
    }
 
 # ---

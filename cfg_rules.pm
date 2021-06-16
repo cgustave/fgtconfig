@@ -1950,18 +1950,30 @@ sub _search_this_key {
 sub _load_XML_rules {
    my $subn = "_load_XML_rules" ;
 
-   # Load the rule files according do what we are :
+   # Load the rule files according do what we are (cfg_global or cfg_vdoms)
+   # looking for 'rules' dir from a sequence of possible path :
+   # current dir, /usr/local/share/fgtconfig/rules, /usr/share/fgtconfig/rules
 
    my $self = shift ;
+   my $path ;
 
    warn "\n* Entering $obj:$subn with obj ref=" . ref($self) if $self->debug ;
 
+   # Search for rules dir
+   for my $p ('./rules/', '/usr/local/share/fgtconfig/rules/', '/usr/share/fgtconfig/rules/', '/etc/fgtconfig/rules/') {
+	  if (-d $p) {
+		 $path = $p ;
+		 warn "$obj:$subn found rules dir path=$p" if $self->debug ;
+		 last ;
+	     }
+      }
+
    if (ref($self) eq 'cfg_global') {
-      $self->{XMLDOC} = XML::LibXML->load_xml(location => './rules/rules_global.xml')
+      $self->{XMLDOC} = XML::LibXML->load_xml(location => $path."rules_global.xml")
         or die "Cannot open XML rule file rules_global.xml" ;
       }
    elsif (ref($self) eq 'cfg_vdoms') {
-      $self->{XMLDOC} = XML::LibXML->load_xml(location => './rules/rules_vdom.xml')
+      $self->{XMLDOC} = XML::LibXML->load_xml(location => $path."rules_vdom.xml")
         or die "Cannot open XML rule file rules_vdom.xml" ;
       }
    else {
