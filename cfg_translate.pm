@@ -120,7 +120,7 @@ sub header_transform {
 
    warn "\n* Entering $obj:$subn" if $self->debug ;
 
-   my $hdr = $self->get(index => 1) ;
+   my $hdr = $self->cfg->get_line(index => 1) ;
 
    if (
       (my $platform) =
@@ -143,7 +143,7 @@ sub header_transform {
 
       # save header
       chomp($hdr) ;
-      $self->replace(index => 1, content => $hdr . "\n") ;
+      $self->cfg->replace(index => 1, content => $hdr . "\n") ;
       }
 
    else {
@@ -255,7 +255,7 @@ sub global_system_global {
 
       if ($admintimeout ne "") {
          print "   o set admintimeout $admintimeout\n" ;
-         $self->set_key(
+         $self->cfg->set_key(
             aref_scope      => \@scope,
             key             => 'admintimeout',
             value           => $admintimeout,
@@ -267,7 +267,7 @@ sub global_system_global {
 
       if ($alias ne "") {
          print "   o set alias $alias\n" ;
-         $self->set_key(
+         $self->cfg->set_key(
             aref_scope      => \@scope,
             key             => 'alias',
             value           => $alias,
@@ -283,7 +283,7 @@ sub global_system_global {
 		   if $guitheme !~ /green|neutrino|blue|melongene|mariner/;
 
          print "   o set gui-them $guitheme\n" ;
-         $self->set_key(
+         $self->cfg->set_key(
             aref_scope      => \@scope,
             key             => 'gui-theme',
             value           => $guitheme,
@@ -296,7 +296,7 @@ sub global_system_global {
 	  if ($adminport ne "") {
 	     die "$adminport must be an integer" if ($adminport !~ /\d+/);
 	     print "   o set admin-port $adminport\n";
-         $self->set_key(
+         $self->cfg->set_key(
             aref_scope      => \@scope,
             key             => 'admin-port',
             value           => $adminport,
@@ -309,7 +309,7 @@ sub global_system_global {
 	  if ($adminsport ne "") {
 	     die "$adminsport must be an integer" if ($adminsport !~ /\d+/);
 	     print "   o set admin-sport $adminsport\n";
-         $self->set_key(
+         $self->cfg->set_key(
             aref_scope      => \@scope,
             key             => 'admin-sport',
             value           => $adminsport,
@@ -322,7 +322,7 @@ sub global_system_global {
 	  if ($adminsshport ne "") {
 	     die "$adminsshport must be an integer" if ($adminsshport !~ /\d+/);
 	     print "   o set admin-sshport $adminsshport\n";
-         $self->set_key(
+         $self->cfg->set_key(
             aref_scope      => \@scope,
             key             => 'admin-ssh-port',
             value           => $adminsshport,
@@ -335,7 +335,7 @@ sub global_system_global {
 	  if ($timezone ne "") {
 	     die "$timezone must be an integer" if ($timezone !~ /\d+/);
 	     print "   o set timezone $timezone\n";
-         $self->set_key(
+         $self->cfg->set_key(
             aref_scope      => \@scope,
             key             => 'timezone',
             value           => $timezone,
@@ -405,13 +405,13 @@ sub global_system_admin {
 
       if ($password eq 'unset') {
          print "   o unset admin password\n" ;
-         $self->unset_key(aref_scope => \@scope, key => 'password') ;
+         $self->cfg->unset_key(aref_scope => \@scope, key => 'password') ;
          }
       elsif ($password ne "") {
          print "   o set admin password $password\n" ;
 
          # if insertion is request, password will be inserted just after edit "admin"
-         $self->set_key(
+         $self->cfg->set_key(
             aref_scope      => \@scope,
             key             => 'password',
             value           => $password,
@@ -426,7 +426,7 @@ sub global_system_admin {
          print "   o unset all trustedhosts (1 to 10)\n" ;
 		 my $i ;
 		 for ($i=1, $i<11, $i++) {
-		     $self->unset_key(aref_scope => \@scope, key => 'trustedhost'.$i) ;
+		     $self->cfg->unset_key(aref_scope => \@scope, key => 'trustedhost'.$i) ;
 		     }
          }
  
@@ -456,7 +456,7 @@ sub global_system_dns {
 
       if ($primary ne "") {
          print "   o set primary dns $primary\n" ;
-         $self->set_key(
+         $self->cfg->set_key(
             aref_scope      => \@scope,
             key             => 'primary',
             value           => $primary,
@@ -468,7 +468,7 @@ sub global_system_dns {
 
       if ($secondary ne "") {
          print "   o set secondary dns $secondary\n" ;
-         $self->set_key(
+         $self->cfg->set_key(
             aref_scope      => \@scope,
             key             => 'secondary',
             value           => $secondary,
@@ -481,12 +481,12 @@ sub global_system_dns {
       if ($source_ip ne "") {
          if ($source_ip eq "unset") {
             print "   o unset dns source-ip\n" ;
-            $self->unset_key(aref_scope => \@scope, key => 'source-ip') ;
+            $self->cfg->unset_key(aref_scope => \@scope, key => 'source-ip') ;
             }
 
          else {
 			print "   o set dns source-ip $source_ip\n" ;
-            $self->set_key(
+            $self->cfg->set_key(
                aref_scope      => \@scope,
                key             => 'source-ip',
                value           => $source_ip,
@@ -500,11 +500,11 @@ sub global_system_dns {
 	  if ($dns_over_tls ne "") {
 		  if ($dns_over_tls eq "unset") {
 			  print "   o unset dns-over-tls\n" ;
-			  $self->unset_key(aref_scope => \@scope, key => 'dns-over-tls') ;
+			  $self->cfg->unset_key(aref_scope => \@scope, key => 'dns-over-tls') ;
 		      }
 		  else {
 			  print "   o set dns-over-tls $dns_over_tls\n" ;
-              $self->set_key(
+              $self->cfg->set_key(
                aref_scope      => \@scope,
                key             => 'dns-over-tls',
                value           => $dns_over_tls,
@@ -539,12 +539,12 @@ sub global_system_ha {
 
       if ($password eq "unset") {
          print "   o unser ha password\n" ;
-         $self->unset_key(aref_scope => \@scope, key => 'password') ;
+         $self->cfg->unset_key(aref_scope => \@scope, key => 'password') ;
          }
 
       else {
          print "   o set ha password $password\n" ;
-         $self->set_key(
+         $self->cfg->set_key(
             aref_scope      => \@scope,
             key             => 'password',
             value           => $password,
@@ -556,7 +556,7 @@ sub global_system_ha {
 
       if ($group_id ne "") {
          print "   o set ha group-id $group_id\n" ;
-         $self->set_key(
+         $self->cfg->set_key(
             aref_scope      => \@scope,
             key             => 'group-id',
             value           => $group_id,
@@ -568,12 +568,12 @@ sub global_system_ha {
 
       if ($monitor eq "unset") {
          print "   o unset ha monitor\n" ;
-         $self->unset_key(aref_scope => \@scope, key => 'monitor') ;
+         $self->cfg->unset_key(aref_scope => \@scope, key => 'monitor') ;
          }
 
       else {
          print "   o set ha monitor $monitor\n" ;
-         $self->set_key(
+         $self->cfg->set_key(
             aref_scope      => \@scope,
             key             => 'monitor',
             value           => $monitor,
@@ -608,7 +608,7 @@ sub global_system_central_management {
       # type
       if ($type eq "unset") {
          print "   o unset central-management type\n" ;
-         $self->unset_key(aref_scope => \@scope, key => 'type') ;
+         $self->cfg->unset_key(aref_scope => \@scope, key => 'type') ;
          }
 
       elsif ($type ne "") {
@@ -617,7 +617,7 @@ sub global_system_central_management {
            if ($type !~ /none|fortiguard|fortimanager|unset/) ;
 
          print "   o set central-management type $type\n" ;
-         $self->set_key(
+         $self->cfg->set_key(
             aref_scope      => \@scope,
             key             => 'type',
             value           => $type,
@@ -630,11 +630,11 @@ sub global_system_central_management {
       # source-ip
       if ($fmg_source_ip eq "unset") {
          print "   o unset central-management fmg-source-ip\n" ;
-         $self->unset_key(aref_scope => \@scope, key => 'fmg-source-ip') ;
+         $self->cfg->unset_key(aref_scope => \@scope, key => 'fmg-source-ip') ;
          }
 
       elsif ($fmg_source_ip ne "") {
-         $self->set_key(
+         $self->cfg->set_key(
             aref_scope      => \@scope,
             key             => 'fmg-source-ip',
             value           => $fmg_source_ip,
@@ -669,12 +669,12 @@ sub global_log_fortianalyzer_setting {
       # status
       if ($status eq "unset") {
          print "   o unset fortianalyzer setting status\n" ;
-         $self->unset_key(aref_scope => \@scope, key => 'status') ;
+         $self->cfg->unset_key(aref_scope => \@scope, key => 'status') ;
          }
       elsif ($status ne "") {
          die "status can only be enable|disable|unset" if ($status !~ /enable|disable|unset/) ;
          print "   o set fortianalyzer setting status\n" ;
-         $self->set_key(
+         $self->cfg->set_key(
             aref_scope      => \@scope,
             key             => 'status',
             value           => $status,
@@ -687,11 +687,11 @@ sub global_log_fortianalyzer_setting {
       # server
       if ($server eq "unset") {
          print "   o unset fortianalyzer setting server\n" ;
-         $self->unset_key(aref_scope => \@scope, key => 'server') ;
+         $self->cfg->unset_key(aref_scope => \@scope, key => 'server') ;
          }
       elsif ($server ne "") {
          print "   o set fortianalyzer setting server\n" ;
-         $self->set_key(
+         $self->cfg->set_key(
             aref_scope      => \@scope,
             key             => 'server',
             value           => $server,
@@ -704,10 +704,10 @@ sub global_log_fortianalyzer_setting {
       # source-ip
 	  if ($source_ip eq "unset") {
          print "   o unset fortianalyzer source-ip\n" ;
-         $self->unset_key(aref_scope => \@scope, key => 'source-ip') ;
+         $self->cfg->unset_key(aref_scope => \@scope, key => 'source-ip') ;
 	     }
 	  elsif ($source_ip ne "") {
-         $self->set_key(
+         $self->cfg->set_key(
             aref_scope      => \@scope,
             key             => 'source-ip',
             value           => $source_ip,
@@ -739,13 +739,13 @@ sub global_system_ntp {
       # ntpsync
 		if ($ntpsync eq "unset") {
          print "   o unset system ntp ntpsync\n" ;
-         $self->unset_key(aref_scope => \@scope, key => 'ntpsync') ;
+         $self->cfg->unset_key(aref_scope => \@scope, key => 'ntpsync') ;
          }
 
       elsif ($ntpsync ne "") {
          die "ntpsync can only be unset|enable|disable" if ($ntpsync !~ /unset|enable|disable"/) ;
          print "   o set system ntp ntpsync $ntpsync\n" ;
-         $self->set_key(
+         $self->cfg->set_key(
             aref_scope      => \@scope,
             key             => 'ntpsync',
             value           => $ntpsync,
@@ -758,7 +758,7 @@ sub global_system_ntp {
       # server
       if ($server ne "") {
          print "   o set system ntp server $server\n" ;
-         $self->set_key(
+         $self->cfg->set_key(
             aref_scope      => \@scope,
             key             => 'server',
             value           => $server,
@@ -771,7 +771,7 @@ sub global_system_ntp {
       # source-ip
       if ($source_ip eq "unset") {
          print "   o unset system ntp source-ip\n" ;
-         $self->unset_key(aref_scope => \@scope, key => 'source-ip') ;
+         $self->cfg->unset_key(aref_scope => \@scope, key => 'source-ip') ;
          }
       }
 
@@ -800,7 +800,7 @@ sub global_system_netflow {
       # collector-ip
       if ($collector_ip ne "") {
          print "   o set netflow collector-ip $collector_ip\n" ;
-         $self->set_key(
+         $self->cfg->set_key(
             aref_scope      => \@scope,
             key             => 'collector-ip',
             value           => $collector_ip,
@@ -813,12 +813,12 @@ sub global_system_netflow {
       # source-ip
       if ($source_ip eq "unset") {
          print "   o unset netflow source-ip\n" ;
-         $self->unset_key(aref_scope => \@scope, key => 'source-ip') ;
+         $self->cfg->unset_key(aref_scope => \@scope, key => 'source-ip') ;
          }
 
       elsif ($source_ip ne "") {
          print "   o set netflow source-ip $source_ip\n" ;
-         $self->set_key(
+         $self->cfg->set_key(
             aref_scope      => \@scope,
             key             => 'source-ip',
             value           => $source_ip,
@@ -1018,13 +1018,13 @@ my $subn = "virtual_wan_link_health_check" ;
 			# Change server
             if ($hc_server ne "") {
                print "     o set server $hc_server\n" ;
-               $self->set_key(aref_scope =>  $ref_scope, key =>'server', value => $hc_server, nb_spaces => 12, increment_index => 1) ;
+               $self->cfg->set_key(aref_scope =>  $ref_scope, key =>'server', value => $hc_server, nb_spaces => 12, increment_index => 1) ;
 			   }
 
 			# Members
 			if ($hc_members ne "") {
 			   print "     o set members $hc_members\n" ;
-               $self->set_key(aref_scope =>  $ref_scope, key =>'members', value => $hc_members, nb_spaces => 12, increment_index => 1) ;
+               $self->cfg->set_key(aref_scope =>  $ref_scope, key =>'members', value => $hc_members, nb_spaces => 12, increment_index => 1) ;
                }
 
 			# Change SLA config 
@@ -1070,31 +1070,31 @@ my $subn = "virtual_wan_link_hc_sla" ;
 		       # latency
 			   if ($latency_treshold eq "unset") {
 			      print "       o unset latency-threshold\n";
-			      $self->unset_key(aref_scope => $ref_scope, key => 'latency-threshold') ;
+			      $self->cfg->unset_key(aref_scope => $ref_scope, key => 'latency-threshold') ;
 			      }
 			   else {
 			      print "       o set latency-threshold $latency_treshold\n";
-			      $self->set_key(aref_scope =>  $ref_scope, key =>'latency-threshold', value=>$latency_treshold, nb_spaces => 20, increment_index => 1) ;
+			      $self->cfg->set_key(aref_scope =>  $ref_scope, key =>'latency-threshold', value=>$latency_treshold, nb_spaces => 20, increment_index => 1) ;
 			      }
 
 			   # jitter
 			   if ($jitter_threshold eq "unset") {
 			      print "       o unset jitter-threshold\n";
-			      $self->unset_key(aref_scope => $ref_scope, key => 'jitter-threshold') ;
+			      $self->cfg->unset_key(aref_scope => $ref_scope, key => 'jitter-threshold') ;
 			      }
 			   else {
 			      print "       o set jitter-threshold $jitter_threshold\n";
-			      $self->set_key(aref_scope =>  $ref_scope, key =>'jitter-threshold', value=>$jitter_threshold, nb_spaces => 20, increment_index => 1) 
+			      $self->cfg->set_key(aref_scope =>  $ref_scope, key =>'jitter-threshold', value=>$jitter_threshold, nb_spaces => 20, increment_index => 1) 
 			      }
 
 			   # packet loss 
 			   if ($packetloss_threshold eq "unset") {
 			      print "       o unset packetloss-threshold\n";
-			      $self->unset_key(aref_scope => $ref_scope, key => 'packetloss-threshold') ;
+			      $self->cfg->unset_key(aref_scope => $ref_scope, key => 'packetloss-threshold') ;
 			      }
 			   else {
 			      print "       o set packetloss-threshold $packetloss_threshold\n";
-			      $self->set_key(aref_scope =>  $ref_scope, key =>'packetloss-threshold', value=>$packetloss_threshold, nb_spaces => 20, increment_index => 1) 
+			      $self->cfg->set_key(aref_scope =>  $ref_scope, key =>'packetloss-threshold', value=>$packetloss_threshold, nb_spaces => 20, increment_index => 1) 
 			      }
 
 			   }
@@ -1335,23 +1335,23 @@ sub _interfaces_configurations {
 
       # set scope index
       my @scope = () ;
-      my $found = $self->_get_scope_edit_interface(aref_scope => \@scope, interface => $name) ;
+      my $found = $self->cfg->get_scope_edit_interface(aref_scope => \@scope, interface => $name) ;
 
       if (not($found)) {
          warn "$obj:$subn could not find interface $name in configuration, create it at index=$scope[0]" if $self->debug ;
          $self->_interface_creation(interface => $name, index => $scope[0]) ;
-         $found = $self->_get_scope_edit_interface(aref_scope => \@scope, interface => $name) ;
+         $found = $self->cfg->get_scope_edit_interface(aref_scope => \@scope, interface => $name) ;
          }
 
       # Also force a status UP (or this could be useless unless said differently
       if ($status eq "down") {
          print "   o set interface $name status down\n" ;
-         $self->set_key(aref_scope => \@scope, key => 'status', value => 'down', nb_spaces => 8) ;
+         $self->cfg->set_key(aref_scope => \@scope, key => 'status', value => 'down', nb_spaces => 8) ;
          }
 
       else {
          print "   o set interface $name status up\n" ;
-         $self->set_key(aref_scope => \@scope, key => 'status', value => 'up', nb_spaces => 8) ;
+         $self->cfg->set_key(aref_scope => \@scope, key => 'status', value => 'up', nb_spaces => 8) ;
          }
 
       # Change description if needed
@@ -1365,7 +1365,7 @@ sub _interfaces_configurations {
          warn "$obj:$subn name=name => set ip=$ip" if $self->debug ;
 
          print "   o set interface $name ip $ip\n" ;
-         $self->set_key(aref_scope => \@scope, key => 'ip', value => $ip, nb_spaces => 8) ;
+         $self->cfg->set_key(aref_scope => \@scope, key => 'ip', value => $ip, nb_spaces => 8) ;
          }
 
 	  # vlanid
@@ -1373,35 +1373,35 @@ sub _interfaces_configurations {
 		  warn "$obj:$subn name=name => set vlanid=$vlanid" if $self->debug ;
 		  die "vlanid should be an integer, not ($vlanid)" if ($vlanid !~ /\d+/) ;
 		  print "   o set interface $name vlanid $vlanid\n" ;
-		  $self->set_key(aref_scope => \@scope, key => 'vlanid', value => $vlanid, nb_spaces => 8) ;
+		  $self->cfg->set_key(aref_scope => \@scope, key => 'vlanid', value => $vlanid, nb_spaces => 8) ;
           }
 
       # Allowaccess
       if ($allowaccess ne "") {
          warn "$obj:$subn name=name => set allowaccess $allowaccess" if $self->debug ;
          print "   o set interface $name allowaccess\n" ;
-         $self->set_key(aref_scope => \@scope, key => 'allowaccess', value => $allowaccess, nb_spaces => 8) ;
+         $self->cfg->set_key(aref_scope => \@scope, key => 'allowaccess', value => $allowaccess, nb_spaces => 8) ;
          }
 
       # Alias
       if ($alias ne "") {
          warn "$obj:$subn name=name => set alias $alias" if $self->debug ;
          print "   o set interface $name alias\n" ;
-         $self->set_key(aref_scope => \@scope, key => 'alias', value => "\"" . $alias . "\"", nb_spaces => 8) ;
+         $self->cfg->set_key(aref_scope => \@scope, key => 'alias', value => "\"" . $alias . "\"", nb_spaces => 8) ;
          }
 
       # Vdom
       if ($vdom ne "") {
          warn "$obj:$subn name=name => set vdom $vdom" if $self->debug ;
          print "   o set interface $name vdom\n" ;
-         $self->set_key(aref_scope => \@scope, key => 'vdom', value => "\"" . $vdom . "\"", nb_spaces => 8) ;
+         $self->cfg->set_key(aref_scope => \@scope, key => 'vdom', value => "\"" . $vdom . "\"", nb_spaces => 8) ;
          }
 
 	  # LACP related
 	  if ($member ne "") {
 		  warn "$obj:$subn name=name => set member $member" if $self->debug ;
 	      print "   o set lag interface $name member $member\n" ;
-		  $self->set_key(aref_scope => \@scope, key => 'member', value => $member, nb_spaces => 8, index_increment => 5 ) ;
+		  $self->cfg->set_key(aref_scope => \@scope, key => 'member', value => $member, nb_spaces => 8, index_increment => 5 ) ;
 	      }
 
 	  if ($lacpmode ne "") {
@@ -1409,12 +1409,12 @@ sub _interfaces_configurations {
 	      print "   o set lag interface $name lacp-mode $lacpmode\n" ;
 		  die "lacp-mode can only be static, passive or active"
 		    if $lacpmode !~ /static|passive|active/ ;
-		  $self->set_key(aref_scope => \@scope, key => 'lacp-mode', value => $lacpmode, nb_spaces => 8, index_increment => 5) ;
+		  $self->cfg->set_key(aref_scope => \@scope, key => 'lacp-mode', value => $lacpmode, nb_spaces => 8, index_increment => 5) ;
 	      }
 	  if ($minlinks ne "") {
 		  warn "$obj:$subn name=name => set min-links $minlinks" if $self->debug ;
 	      print "   o set lag interface $name min-links $minlinks\n" ;
-		  $self->set_key(aref_scope => \@scope, key => 'min-links', value => $minlinks, nb_spaces => 8, index_increment => 5) ;
+		  $self->cfg->set_key(aref_scope => \@scope, key => 'min-links', value => $minlinks, nb_spaces => 8, index_increment => 5) ;
 	      }
       }
    }
@@ -1433,10 +1433,10 @@ sub _interface_creation {
 
    print "   o create non existing interface $interface\n" ;
    $index++ ;
-   $self->insert(index => $index, content => "    next") ;
-   $self->insert(index => $index, content => "        set type physical") ;
-   $self->insert(index => $index, content => "        set status up") ;
-   $self->insert(index => $index, content => "    edit \"$interface\"") ;
+   $self->cfg->insert(index => $index, content => "    next") ;
+   $self->cfg->insert(index => $index, content => "        set type physical") ;
+   $self->cfg->insert(index => $index, content => "        set status up") ;
+   $self->cfg->insert(index => $index, content => "    edit \"$interface\"") ;
 
    # Config has been touched, need to register vdoms again
    $self->cfg->register_vdoms() ;
@@ -1462,11 +1462,11 @@ sub _create_vdom_link {
    if ($self->cfg->feedback('found')) {
       my $index = ($self->cfg->feedback('endindex')) ;
       warn "$obj:$subn config system vdom-link exists, only add a new entry at $index" if $self->debug ;
-      $self->insert(index => $index, content => "    edit \"$vdlink\"") ;
+      $self->cfg->insert(index => $index, content => "    edit \"$vdlink\"") ;
       $index++ ;
-      $self->insert(index => $index, content => "        set type $type") ;
+      $self->cfg->insert(index => $index, content => "        set type $type") ;
       $index++ ;
-      $self->insert(index => $index, content => "    next") ;
+      $self->cfg->insert(index => $index, content => "    next") ;
       $index++ ;
       }
 
@@ -1476,15 +1476,15 @@ sub _create_vdom_link {
       # Create a new config statement before config system interface
       $self->cfg->scope_config(\@scope, 'config system interface') ;
       my $index = ($self->cfg->feedback('startindex')) ;
-      $self->insert(index => $index, content => "config system vdom-link") ;
+      $self->cfg->insert(index => $index, content => "config system vdom-link") ;
       $index++ ;
-      $self->insert(index => $index, content => "    edit \"$vdlink\"") ;
+      $self->cfg->insert(index => $index, content => "    edit \"$vdlink\"") ;
       $index++ ;
-      $self->insert(index => $index, content => "        set type \"$type\"") ;
+      $self->cfg->insert(index => $index, content => "        set type \"$type\"") ;
       $index++ ;
-      $self->insert(index => $index, content => "    next") ;
+      $self->cfg->insert(index => $index, content => "    next") ;
       $index++ ;
-      $self->insert(index => $index, content => "end") ;
+      $self->cfg->insert(index => $index, content => "end") ;
       $index++ ;
       }
    }
@@ -1504,10 +1504,10 @@ sub _interface_unset_key {
    warn "\n* Entering $obj:$subn with interface=$interface key=$key" if $self->debug ;
 
    my @scope = () ;
-   my $found = $self->_get_scope_edit_interface(aref_scope => \@scope, interface => $interface) ;
+   my $found = $self->cfg->get_scope_edit_interface(aref_scope => \@scope, interface => $interface) ;
    if ($found) {
       print "   o remove interface $interface speed\n" ;
-      $self->unset_key(aref_scope => \@scope, key => $key) ;
+      $self->cfg->unset_key(aref_scope => \@scope, key => $key) ;
       }
 
    else {
@@ -1528,9 +1528,9 @@ sub _interface_description_change {
    warn "\n* Entering $obj:$subn with interface=$interface description=$description" if $self->debug ;
 
    my @scope = () ;
-   my $found = $self->_get_scope_edit_interface(aref_scope => \@scope, interface => $interface) ;
+   my $found = $self->cfg->get_scope_edit_interface(aref_scope => \@scope, interface => $interface) ;
    if ($found) {
-      $self->set_key(aref_scope => \@scope, key => 'description', value => "\"" . $description . "\"", nb_spaces => 8) ;
+      $self->cfg->set_key(aref_scope => \@scope, key => 'description', value => "\"" . $description . "\"", nb_spaces => 8) ;
       print "   o change interface $interface description ($description)\n" ;
       }
    else {
@@ -1551,9 +1551,9 @@ sub _interface_alias_change {
    warn "\n* Entering $obj:$subn with interface=$interface alias=$alias" if $self->debug ;
 
    my @scope = () ;
-   my $found = $self->_get_scope_edit_interface(aref_scope => \@scope, interface => $interface) ;
+   my $found = $self->cfg->get_scope_edit_interface(aref_scope => \@scope, interface => $interface) ;
    if ($found) {
-      $self->set_key(aref_scope => \@scope, key => 'alias', value => "\"" . $alias . "\"", nb_spaces => 8) ;
+      $self->cfg->set_key(aref_scope => \@scope, key => 'alias', value => "\"" . $alias . "\"", nb_spaces => 8) ;
       print "   o change interface $interface alias ($alias)\n" ;
       }
    else {
@@ -1580,9 +1580,9 @@ sub _interface_type_change {
 
    # Position our index
    my @scope = () ;
-   my $found = $self->_get_scope_edit_interface(aref_scope => \@scope, interface => $interface) ;
+   my $found = $self->cfg->get_scope_edit_interface(aref_scope => \@scope, interface => $interface) ;
    if ($found) {
-      $self->set_key(aref_scope => \@scope, key => 'type', value => $dst_type, nb_spaces => 8) ;
+      $self->cfg->set_key(aref_scope => \@scope, key => 'type', value => $dst_type, nb_spaces => 8) ;
       print "   o change interface $interface type to $dst_type\n" ;
 
       # Things to do for any type of interfaces. as we have changed config, it is safer to re-scope again
@@ -1666,11 +1666,11 @@ sub _interface_status_change {
 
    # Position our index
    my @scope = () ;
-   my $found = $self->_get_scope_edit_interface(aref_scope => \@scope, interface => $interface) ;
+   my $found = $self->cfg->get_scope_edit_interface(aref_scope => \@scope, interface => $interface) ;
 
    if ($found) {
       print "   o change interface $interface to status $status\n" ;
-      $self->set_key(aref_scope => \@scope, key => 'status', value => $status, nb_spaces => 8) ;
+      $self->cfg->set_key(aref_scope => \@scope, key => 'status', value => $status, nb_spaces => 8) ;
       }
 
    }
@@ -1883,7 +1883,7 @@ sub _all_vdoms_firewall_policies {
             if ($self->cfg->feedback('found')) {
 
                warn "found scope_round startindex=" . $scope[0] . " endindex=" . $scope[1] if $self->debug ;
-               $self->delete_all_keys(aref_scope => \@scope, key => 'auto-asic-offload', nested => NOTNESTED) ;
+               $self->cfg->delete_all_keys_from_block(aref_scope => \@scope, key => 'auto-asic-offload', nested => NOTNESTED) ;
 
                # Move to next round
                $scope[0] = $scope[1] ;
@@ -1928,7 +1928,7 @@ my $subn = "_all_vdoms_vpn_ipsec_phase1_interface";
             my $id ;
             while ($self->cfg->scope_edit(\@edit_scope, 'edit', \$id)) {
                warn "$obj:$subn found id=$id scoped with start=" . $edit_scope[0] . " end=" . $edit_scope[1] if $self->debug ;
-               $self->set_key(aref_scope => \@edit_scope, key => 'psksecret', value=>$psksecret, nb_spaces=>8, nested => NOTNESTED) ;
+               $self->cfg->set_key(aref_scope => \@edit_scope, key => 'psksecret', value=>$psksecret, nb_spaces=>8, nested => NOTNESTED) ;
               
                # Prepare for next edit
                $edit_scope[0] = $edit_scope[1] ;

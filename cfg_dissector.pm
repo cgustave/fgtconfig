@@ -357,6 +357,24 @@ sub delete {
 
 # ---
 
+sub replace {
+   my $subn = "replace" ;
+
+   # Replaces a line in the configuration at a defined index
+
+   my $self    = shift ;
+   my %options = @_ ;
+   my $index   = $options{'index'} ;
+   my $content = $options{'content'} ;
+
+   warn "\n* Entering $obj:$subn with index=$index, content=$content" if $self->debug ;
+
+   # Insert our line
+   $self->set_line(index => $index, content => $content) ;
+   }
+
+# ---
+
 sub delete_block {
    my $subn = "delete_block" ;
 
@@ -388,6 +406,7 @@ sub delete_block {
 
    # Reduce max_line
    $self->{_CONFIG_LINES} = $self->{_CONFIG_LINES} - $diff - 1 ;
+   $self->register_vdoms() ;
    }
 
 # ---
@@ -411,7 +430,6 @@ sub delete_all_keys_from_block {
    die "aref_scope is required" if (not(defined($aref_scope))) ;
 
    # Mark likes for deletion
-   my @delete = () ;
    for (my $i = $$aref_scope[0] ; $i <= $$aref_scope[1] ; $i++) {
       if ($self->{_CONFIG}[$i] =~ /^(?:\s|\t)*(?:set\s)$key(?:\s|\t)/) {
          warn "$obj:$subn delete index=$i line=" . ($self->{_CONFIG}[$i]) if $self->debug ;
@@ -848,13 +866,13 @@ sub get_key {
       # Detect start of netsted config/end or edit/next
       if (($nested_key) = $line =~ /^(?:\s|\t)*(config|edit)/) {
          warn "$obj:$subn found start of nested block $nested_key line=$index" if $self->debug() ;
-         $nested_key++ ;
+         $nested_count++ ;
          }
 
       # Detect end of nested config/end or edit/next
       if (($nested_key) = $line =~ /^(?:\s|\t)*(end|next)$/) {
          warn "$obj:$subn found end of nested block $nested_key line=$index" if $self->debug() ;
-         $nested_key-- ;
+         $nested_count-- ;
          }
 
       # Did we found the statement  ?
@@ -902,6 +920,88 @@ sub get_key {
 
    warn "$obj:$subn returning value=$value for key=$key" if $self->debug() ;
    return ($value) ;
+   }
+
+# ---
+
+sub unset_key {
+   my $subn = "unset_key" ;
+
+   # remove the line with the key if found in the given scope
+   # if not found, no action is taken
+
+   my $self       = shift ;
+   my %options    = @_ ;
+   my $aref_scope = $options{'aref_scope'} ;
+   my $key        = $options{'key'} ;
+   my $nested     = defined($options{'nested'}) ? $options{'nested'} : NOTNESTED ;
+
+   warn "\n* Entering $obj:$subn with scope, key=$key, nested=$nested scope=[" . $$aref_scope[0] . "-" . $$aref_scope[1] . "]" if $self->debug ;
+
+   # Sanity
+   die "key is required" if (not(defined($key))) ;
+
+   # See if the key exists, if so, get its index (we don't provide any default value here)
+
+   my $return = $self->get_key($aref_scope, $key, $nested, '', 0) ;    # Don't want any value, only see existance of key
+   my $found = $self->feedback('found') ;
+
+   if ($found) {
+      my $index = $self->feedback('index') ;
+      warn "$obj:$subn key $key found => deleting (blanking) line at index=$index" if $self->debug ;
+      $self->delete(index => $index) ;
+      }
+
+   else {
+      warn "$obj:$subn key $key was not found, do nothing" if $self->debug ;
+      }
+   }
+
+# ---
+
+sub set_key {
+   my $subn = "set_key" ;
+
+   # Inserts or update the configuration key
+   # The key is first search on the given scope, if found the key is replaced (no new line added)
+   # If not found, a new line with the key is added in the configuration
+
+   my $self            = shift ;
+   my %options         = @_ ;
+   my $aref_scope      = $options{'aref_scope'} ;
+   my $key             = $options{'key'} ;
+   my $value           = $options{'value'} ;
+   my $index_increment = defined($options{'index_increment'}) ? $options{'index_increment'} : 1 ;    # increment of position to add from scope start
+   my $nb_spaces       = defined($options{'nb_spaces'}) ? $options{'nb_spaces'} : 0 ;                # number of spaces before the "set"
+   my $nested          = defined($options{'nested'}) ? $options{'nested'} : NOTNESTED ;              # use NESTED|NOTNESTED (declared as constant)
+
+   warn "\n* Entering $obj:$subn with scope, key=$key, value=$value, index_increment=$index_increment, nb_spaces=$nb_spaces index_nested=$nested"
+     if $self->debug ;
+
+   # See if the key exists, if so, get its index (we don't provide any default value here
+   $self->get_key($aref_scope, $key, $nested, '') ;
+   my $found = $self->feedback('found') ;
+
+   my $content = " " x $nb_spaces . "set $key $value\n" ;
+
+   if ($found) {
+      my $old_value = $self->feedback('value') ;
+      my $index     = $self->feedback('index') ;
+      warn "$obj:$subn key $key found => replacing existing value \"$old_value\" with \"$value\" at index=$index" if $self->debug ;
+      $self->set_line(index => $index, content => $content) ;
+      }
+
+   else {
+      # Get index where to add the statement, index is at scope start + index increment
+      my $scope_start = $$aref_scope[0] ;
+      my $index       = $scope_start + $index_increment ;
+      warn "$obj:$subn key $key not found => adding a new key statement with value \"$value\" at index=$index" if $self->debug ;
+      chomp($content) ;
+      $self->insert(index => $index, content => $content) ;
+
+      # Config has been touched, need to register vdoms again
+      $self->register_vdoms() ;
+      }
    }
 
 # ---
@@ -1133,6 +1233,31 @@ sub _config_seek {
    $return[1] = $start_return ;
    $return[2] = $end_return ;
    return @return ;
+   }
+
+
+# ---
+
+sub get_scope_edit_interface {
+   my $subn = "get_scope_edit_interface" ;
+
+   # Position scope for config system interdace -> edit ><name>
+
+   my $self       = shift ;
+   my %options    = @_ ;
+   my $interface  = $options{'interface'} ;
+   my $aref_scope = $options{'aref_scope'} ;
+
+   warn "\n* Entering $obj:$subn with scope and interface=$interface" if $self->debug ;
+
+   $self->scope_config($aref_scope, 'config system interface') ;
+   $self->scope_edit($aref_scope, "edit \"" . $interface . "\"") ;
+   if ($self->feedback('found')) {
+      warn "$obj:$subn found with scope : [" . $self->feedback('startindex') . ":" . $self->feedback('endindex') . "]" if $self->debug ;
+      return 1 ;
+      }
+
+   return 0 ;
    }
 
 # --------------------------------------------------
