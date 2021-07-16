@@ -194,13 +194,13 @@ sub display_global {
 
    print "\n" ;
    print
-"|=============================================================================================================================================================================|\n"
+"|=====================================================================================================================================================================================|\n"
      ;
    print
-"| Model  | Firmware version, build, tag  |     HA     |       Hostname       |  Fortimanager   |  Fortianalyzer  |  Fortianalyzer2 |  Fortianalyzer3 |          Nb VDOMs      |\n"
+"| Model  | Firmware version, build, tag  |     HA     |       Hostname       |  Fortimanager   |  Fortianalyzer  |  Fortianalyzer2 |  Fortianalyzer3 |          Nb VDOMs              |\n"
      ;
 
-   printf "| %6s | %-6s B%-4s(%-3s) %7s %4s| %10s | %20.20s | %15.15s | %15.15s | %15.15s | %15.15s | %22.22s |\n",
+   printf "| %6s | %-6s B%-4s(%-3s) %7s %4s| %10s | %20.20s | %15.15s | %15.15s | %15.15s | %15.15s | %30.30s |\n",
      $self->glo->cfg->plateform(),
      $self->glo->cfg->version(),
      $self->glo->cfg->build(),
@@ -216,13 +216,13 @@ sub display_global {
      $self->cfg->get_nb_vdoms() ;
 
    print
-"|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n"
+"|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n"
      ;
    print
-"|                              Fortiguard                                    |                 |     Syslog      |     Syslog2     |     Syslog3     |       Admin users      |\n"
+"|                              Fortiguard                                    |                 |     Syslog      |     Syslog2     |     Syslog3     |           Admin users          |\n"
      ;
    printf
-"| mod_hostname=%-3s  mgmt=%-3s  webfilter=%-3s  antispam=%-3s  avquery=%-3s       |                 | %15.15s | %15.15s | %15.15s | no_pwd=%-3s trusted=%-3s |\n",
+"| mod_hostname=%-3s  mgmt=%-3s  webfilter=%-3s  antispam=%-3s  avquery=%-3s       |                 | %15.15s | %15.15s | %15.15s | no_pwd=%-3s trusted=%-3s         |\n",
      $self->color($self->glo->hasMatched(ruleId => 'system.fortiguard.hostname')),
      $self->color($self->glo->hasMatched(ruleId => 'system.fortiguard.central-mgmt-status')),
      $self->color($self->glo->hasMatched(ruleId => 'system.fortiguard.webfilter-status')),
@@ -235,16 +235,16 @@ sub display_global {
      $self->color($display_all_trusthost) ;
 
    print
-"|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n"
+"|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n"
      ;
 
    # Prints warnings with colors if asked
    print "| warn: " ;
-   $self->printfColor($self->display_warnings(color => $self->color_flag), 166) ;
+   $self->printfColor($self->display_warnings(color => $self->color_flag), 174) ;
    print "|\n" ;
 
    print
-"|=============================================================================================================================================================================|\n\n"
+"|=====================================================================================================================================================================================|\n\n"
      ;
    }
 
@@ -388,7 +388,7 @@ sub display_all_vdoms {
          }
 
       print
-"|=============================================================================================================================================================================|\n"
+"|=====================================================================================================================================================================================|\n"
         ;
       print "\n" ;
       }
@@ -416,22 +416,22 @@ sub display_tp_vdom {
       }
 
    print
-"|=============================================================================================================================================================================|\n"
+"|=====================================================================================================================================================================================|\n"
      ;
    printf "| vdom: " ;
    $self->printfColor($vdom_d, 50) ;
 
    my $manageip = $self->vd->dataGet(vdom => $vdom, ruleId => 'system.settings.generic', key => 'manageip') ;
-   printf " opmode: TP   manage ip: %-18s                                                                         |\n",
+   printf " opmode: TP   manage ip: %-18s                                                                                 |\n",
      $self->intfs->cidr($manageip) ;
    printf
-"|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n"
+"|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n"
      ;
    printf "| warn: " ;
-   $self->printfColor($self->display_warnings(vdom => $vdom, color => $self->color_flag), 166) ;
+   $self->printfColor($self->display_warnings(vdom => $vdom, color => $self->color_flag), 174) ;
    print "|\n" ;
    print
-"|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n"
+"|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n"
      ;
 
    $self->display_nat_and_tp_common_features($vdom) ;
@@ -441,13 +441,13 @@ sub display_tp_vdom {
    $self->display_vdom_statistic($vdom) if $self->stats_flag() ;
 
    print
-"|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n"
+"|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n"
      ;
    print
-"| interface (alias)         | zone          | physical / flags      |  vlan  |  fwd  |state |  speed  | admin access                                                          |\n"
+"| interface (alias)         | zone          | physical / flags      |  vlan  |  fwd  |state |  speed  | admin access                                                                  |\n"
      ;
    print
-"|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n"
+"|-------------------------------------------------------------------------------------------------------------------------------========----------------------------------------------|\n"
      ;
 
    # Go through the different types of interfaces: aggregated,redundant, physical with associated vlans
@@ -501,7 +501,7 @@ sub display_policies_and_interface_policies {
 
    # Policy : UTM features line first 
 
-   printf "|         %9s policies: applist=%-3s     ipssensor=%-3s  av=%-3s         webfilter=%-3s dnsfilter=%3s voip=%-3s                                                              |\n",
+   printf "|         %9s policies: applist=%-3s     ipssensor=%-3s  av=%-3s         webfilter=%-3s dnsfilter=%3s voip=%-3s                                                                      |\n",
      $self->vd->get(vdom => $vdom, key => 'nb_policy'),
      $self->color($self->vd->get(vdom => $vdom, key => 'applist')),
      $self->color($self->vd->get(vdom => $vdom, key => 'ipssensor')),
@@ -513,7 +513,7 @@ sub display_policies_and_interface_policies {
 
    # Policy : non UTM features line
 
-   printf "|                           : shaping=%-3s     logtraffic=%-3s webcache=%-3s   learning=%-3s                                                                                      |\n",
+   printf "|                           : shaping=%-3s     logtraffic=%-3s webcache=%-3s   learning=%-3s                                                                                              |\n",
      $self->color($self->vd->get(vdom => $vdom, key => 'shaping')),
      $self->color($self->vd->get(vdom => $vdom, key => 'logtraffic')),
      $self->color($self->vd->get(vdom => $vdom, key => 'webcache')),
@@ -523,7 +523,7 @@ sub display_policies_and_interface_policies {
     # Interface policy 
 
    printf
-"| %7s interface_policies: applist=%-3s     ipssensor=%-3s  DoS=%-3s        av=%-3s        webfilter=%-3s dlp=%-3s                                                               |\n",
+"| %7s interface_policies: applist=%-3s     ipssensor=%-3s  DoS=%-3s        av=%-3s        webfilter=%-3s dlp=%-3s                                                                       |\n",
      $self->vd->get(vdom => $vdom, key => 'nb_interface_policy'),
      $self->color($self->vd->get(vdom => $vdom, key => 'interface_policy', subkey => 'application-list-status')),
      $self->color($self->vd->get(vdom => $vdom, key => 'interface_policy', subkey => 'ips-sensor-status')),
@@ -533,7 +533,7 @@ sub display_policies_and_interface_policies {
      $self->color($self->vd->get(vdom => $vdom, key => 'interface_policy', subkey => 'dlp-sensor-status')) ;
 
    printf
-"|       %7s DoS_policies: DoS=%-3s                                                                                                                                         |\n",
+"|       %7s DoS_policies: DoS=%-3s                                                                                                                                                 |\n",
      $self->vd->get(vdom => $vdom, key => 'nb_dos_policy'),
      $self->color($self->vd->get(vdom => $vdom, key => 'dos_policy')) ;
    }
@@ -549,10 +549,10 @@ sub display_vdom_statistic {
    warn "\n* Entering $obj:$subn with vdom=$vdom" if $self->debug() ;
 
    print
-"|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n"
+"|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n"
      ;
    printf
-"|        firewall ipv4 :   policy=%-5s   addr=%-5s     addrgrp=%-5s   serv_cust=%-5s   schedule=%-5s   ip_pools=%-5s   vip=%-5s   vip_grp=%-5s                        |\n",
+"|        firewall ipv4 :   policy=%-5s   addr=%-5s     addrgrp=%-5s   serv_cust=%-5s   schedule=%-5s   ip_pools=%-5s   vip=%-5s   vip_grp=%-5s                                |\n",
      $self->vd->get(vdom => $vdom, key => 'nb_policy'),
      $self->stat->get(vdom => $vdom, key => 'fw_addr'),
      $self->stat->get(vdom => $vdom, key => 'fw_addrgrp'),
@@ -565,7 +565,7 @@ sub display_vdom_statistic {
 
 
    printf
-"|        firewall ipv6 :   policy6=%-5s  addr6=%-5s    addrgrp6=%-5s                                                                                                       |\n",
+"|        firewall ipv6 :   policy6=%-5s  addr6=%-5s    addrgrp6=%-5s                                                                                                               |\n",
      $self->stat->get(vdom => $vdom, key => 'fw_policy6'),
      $self->stat->get(vdom => $vdom, key => 'fw_addr6'),
      $self->stat->get(vdom => $vdom, key => 'fw_addrgrp6'),
@@ -583,7 +583,7 @@ sub display_authentication {
    warn "\n* Entering $obj:$subn with vdom=$vdom" if $self->debug() ;
 
    printf
-"|                       auth: local=%-3s       fsso=%-3s       ldap=%-3s       radius=%-3s    tacacs=%-3s    token=%-3s                                                             |\n",
+"|                       auth: local=%-3s       fsso=%-3s       ldap=%-3s       radius=%-3s    tacacs=%-3s    token=%-3s                                                                     |\n",
      $self->color($self->vd->hasMatched(vdom => $vdom, ruleId => 'feature.userlocal')),
      $self->color($self->vd->hasMatched(vdom => $vdom, ruleId => 'feature.fsso')),
      $self->color($self->vd->hasMatched(vdom => $vdom, ruleId => 'feature.ldap')),
@@ -604,7 +604,7 @@ sub display_nat_and_tp_common_features {
    warn "\n* Entering $obj:$subn with vdom=$vdom" if $self->debug() ;
 
    printf
-"|                   features: snat=%-3s        ipsec=%-3s      webproxy=%-3s   wanopt=%-3s    gtp=%-3s       ssync=%-3s     client_rep=%-3s    dev_ident=%-3s                         |\n",
+"|                   features: snat=%-3s        ipsec=%-3s      webproxy=%-3s   wanopt=%-3s    gtp=%-3s       ssync=%-3s     client_rep=%-3s    dev_ident=%-3s                                 |\n",
      $self->color($self->vd->get(vdom => $vdom, key => 'snat')),    # checked in policies
      $self->color($self->vd->hasMatched(vdom => $vdom, ruleId => 'feature.ipsec')),
      $self->color($self->vd->hasMatched(vdom => $vdom, ruleId => 'feature.webproxy')),
@@ -616,7 +616,7 @@ sub display_nat_and_tp_common_features {
      ;
 
    printf
-"|                   features: localinpol=%-3s  anypol=%-3s     mcastpol=%-3s   geoaddr=%-3s   fqdnaddr=%-3s  logdisc=%-3s                                                           |\n",
+"|                   features: localinpol=%-3s  anypol=%-3s     mcastpol=%-3s   geoaddr=%-3s   fqdnaddr=%-3s  logdisc=%-3s                                                                   |\n",
      $self->color($self->vd->hasMatched(vdom => $vdom, ruleId => 'feature.local-in-policy')),
      $self->color($self->vd->get(vdom => $vdom, key => 'anypolicy')),                # checked in policies
      $self->color($self->vd->hasMatched(vdom => $vdom, ruleId => 'feature.multicast-policy')),
@@ -637,7 +637,7 @@ sub display_tp_specific_features {
    warn "\n* Entering $obj:$subn with vdom=$vdom" if $self->debug() ;
 
    printf
-"|                TP features: port-pair=%3s                                                                                                                                   |\n",
+"|                TP features: port-pair=%3s                                                                                                                                           |\n",
      $self->color($self->vd->hasMatched(vdom => $vdom, ruleId => 'feature.tp.port-pair')) ;
    }
 
@@ -673,7 +673,7 @@ sub display_tp_interface {
       $hash_warning_fwd{$forward_domain} = $href_forward_domain->{$forward_domain} ;
       }
 
-   printf "| %-26.26s| %-14.14s| %-22.22s| %-6.6s | %-5.5s | %-4.4s | %-7.7s | %-69.69s |\n",
+   printf "| %-26.26s| %-14.14s| %-22.22s| %-6.6s | %-5.5s | %-4.4s | %-7.7s | %-77.77s |\n",
      $disp_interface,
      $self->intfs->get(name => $interface, key => 'zone'),
      $self->intfs->get(name => $interface, key => 'interface') . $type,
@@ -706,24 +706,24 @@ sub display_nat_vdom {
       }
 
    print
-"|=============================================================================================================================================================================|\n"
+"|=====================================================================================================================================================================================|\n"
      ;
    printf "| vdom: " ;
    $self->printfColor($vdom_d, 50) ;
-   printf " opmode: %-3s                                                                                                        |\n",
+   printf " opmode: %-3s                                                                                                                |\n",
      $self->cfg->get_vdom_opmode($vdom) ;
    printf
-"|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n"
+"|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n"
      ;
    print "| warn: " ;
-   $self->printfColor($self->display_warnings(vdom => $vdom, color => $self->color_flag), 166) ;
+   $self->printfColor($self->display_warnings(vdom => $vdom, color => $self->color_flag), 174) ;
    print "|\n" ;
    print
-"|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n"
+"|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n"
      ;
 
    printf
-"|                   features: gre=%-3s         pptp=%-3s       l2tp=%-3s       ssl=%-3s       dnstrans=%-3s  wccp=%-3s      icap=%-3s                                                |\n",
+"|                   features: gre=%-3s         pptp=%-3s       l2tp=%-3s       ssl=%-3s       dnstrans=%-3s  wccp=%-3s      icap=%-3s                                                        |\n",
      $self->color($self->vd->hasMatched(vdom => $vdom, ruleId => 'feature.gre')),
      $self->color($self->vd->hasMatched(vdom => $vdom, ruleId => 'feature.pptp')),
      $self->color($self->vd->hasMatched(vdom => $vdom, ruleId => 'feature.l2tp')),
@@ -733,7 +733,7 @@ sub display_nat_vdom {
      $self->color($self->vd->hasMatched(vdom => $vdom, ruleId => 'feature.icap')) ;
 
    printf
-"|                   features: vip=%-3s         vip_lb=%-3s     vip_slb=%-3s    centnat=%-3s                                                                                       |\n",
+"|                   features: vip=%-3s         vip_lb=%-3s     vip_slb=%-3s    centnat=%-3s                                                                                               |\n",
      $self->color($self->vd->hasMatched(vdom => $vdom, ruleId => 'feature.vip.standard')),
      $self->color($self->vd->hasMatched(vdom => $vdom, ruleId => 'feature.vip.load-balance')),
      $self->color($self->vd->hasMatched(vdom => $vdom, ruleId => 'feature.vip.server-load-balance')),
@@ -745,13 +745,13 @@ sub display_nat_vdom {
    $self->display_vdom_statistic($vdom) if $self->stats_flag() ;
 
    printf
-"|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n"
+"|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n"
      ;
    printf
-"| interface (alias)         | zone          | physical / flags      |  mode  | vlan |     ip address     |     network     |    broadcast    |state |PS|MO|   admin access    |\n"
+"| interface (alias)         | zone          | physical / flags      |  mode  | vlan | vrf  |     ip address     |     network     |    broadcast    |state |PS|MO|   admin access     |\n"
      ;
    printf
-"|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n"
+"|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n"
      ;
 
    # Go through the different types of interfaces: aggregated,redundant, physical with associated vlans
@@ -804,12 +804,13 @@ sub display_nat_interface {
       $disp_interface .= " (" . $self->intfs->get(name => $interface, key => 'alias') . ")" ;
       }
 
-   printf "| %-26.26s| %-14.14s| %-22.22s| %-6.6s | %-4.4s | %18.18s | %15.15s | %15.15s | %-4.4s |%-2.2s|%-2.2s| %-17.17s |\n",
+   printf "| %-26.26s| %-14.14s| %-22.22s| %-6.6s | %-4.4s | %-4.4s | %18.18s | %15.15s | %15.15s | %-4.4s |%-2.2s|%-2.2s| %-18.18s |\n",
      $disp_interface,
      $self->intfs->get(name => $interface, key => 'zone'),
      $self->intfs->get(name => $interface, key => 'interface') . $type,
      $self->intfs->get(name => $interface, key => 'mode'),
      $self->intfs->get(name => $interface, key => 'vlanid'),
+     $self->intfs->get(name => $interface, key => 'vrf'),
      $self->intfs->get(name => $interface, key => 'ip'),
      $self->intfs->get(name => $interface, key => 'network'),
      $self->intfs->get(name => $interface, key => 'broadcast'),
@@ -883,10 +884,10 @@ sub display_vdom_routing {
    warn "\n* Entering $obj:$subn vdom=$vdom" if $self->debug() ;
 
    print
-"|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n"
+"|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n"
      ;
    printf
-"|  id  | subnets            | device        | gateway               |  dist  | prio | weig |    id_route=%-3s   p_route=%-3s   rip=%-3s   ospf=%-3s   isis=%-3s   bgp=%-3s   pim=%-3s|\n",
+"|  id  | subnets            | device        | gateway               |  dist  | prio | weig |    id_route=%-3s   p_route=%-3s   rip=%-3s   ospf=%-3s   isis=%-3s   bgp=%-3s   pim=%-3s        |\n",
      $self->color($self->vd->hasMatched(vdom => $vdom, ruleId => 'feature.identity-based-route')),
      $self->color($self->vd->hasMatched(vdom => $vdom, ruleId => 'feature.policy-route')),
      $self->color($self->vd->hasMatched(vdom => $vdom, ruleId => 'feature.rip')),
@@ -895,7 +896,7 @@ sub display_vdom_routing {
      $self->color($self->vd->hasMatched(vdom => $vdom, ruleId => 'feature.bgp')),
      $self->color($self->vd->hasMatched(vdom => $vdom, ruleId => 'feature.pim')) ;
    print
-"|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n"
+"|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n"
      ;
 
    #@keys = sort { $a <=> $b } (@keys) ;
@@ -903,7 +904,7 @@ sub display_vdom_routing {
 
    foreach my $key (@keys) {
       printf
-"| %4s | %18.18s | %13.13s | %21.21s | %6.6s | %4.4s | %4.4s |                                                                                  |\n",
+"| %4s | %18.18s | %13.13s | %21.21s | %6.6s | %4.4s | %4.4s |                                                                                          |\n",
         $key,
         $self->vd->get(vdom => $vdom, key => 'static_route', subkey => $key, thirdkey => 'dst'),
         $self->vd->get(vdom => $vdom, key => 'static_route', subkey => $key, thirdkey => 'device'),
@@ -928,10 +929,10 @@ sub display_ipsec_interface {
 
    # Phase 1
    printf
-"|                 ............................................................................................................................................................|\n"
+"|.....................................................................................................................................................................................|\n"
      ;
    printf
-     "| %-13s   type:%-7s    rem-gw:%-15s mode:%-10s  loc-gw:%-15s     peer=%-15s            ph2: %-3s src: %-3s  dst: %-3s  routes: %-3s |\n",
+     "| %-13s   type:%-7s    rem-gw:%-15s mode:%-10s  loc-gw:%-15s     peer=%-15s            ph2: %-3s src: %-3s  dst: %-3s  routes: %-3s         |\n",
      $self->vd->get(vdom => $vdom, key => 'ipsec_phase1', subkey => $interface, thirdkey => '_DUP'),
      $self->vd->get(vdom => $vdom, key => 'ipsec_phase1', subkey => $interface, thirdkey => 'type'),
      $self->vd->get(vdom => $vdom, key => 'ipsec_phase1', subkey => $interface, thirdkey => 'remotegw'),
@@ -946,7 +947,7 @@ sub display_ipsec_interface {
    # phase 2
    foreach my $ph2 ($self->vd->get_ipsec_phase2s($vdom)) {
       if ($self->vd->get(vdom => $vdom, key => 'ipsec_phase2', subkey => $ph2, thirdkey => 'phase1name') eq $interface) {
-         printf "|                 %-32s                   %-40s -> %-40s                     |\n",
+         printf "|                 %-32s                   %-40s -> %-40s                             |\n",
            $ph2,
            $self->vd->get(vdom => $vdom, key => 'ipsec_phase2', subkey => $ph2, thirdkey => 'src'),
            $self->vd->get(vdom => $vdom, key => 'ipsec_phase2', subkey => $ph2, thirdkey => 'dst') ;
@@ -954,7 +955,7 @@ sub display_ipsec_interface {
       }
 
    print
-"|.............................................................................................................................................................................|\n"
+"|.....................................................................................................................................................................................|\n"
      ;
    }
 

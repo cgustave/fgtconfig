@@ -31,6 +31,7 @@ my %hash_interface = (
    status                   => 'up',
    speed                    => 'auto',
    vlanid                   => '',
+   vrf                      => '0',
    ip                       => '',
    allowaccess              => '',
    alias                    => '',
@@ -404,7 +405,7 @@ sub set_interface_defaults {
    warn "\n* Entering $subn with interface=$interface" if $self->debug() ;
 
    foreach my $attr (
-      qw /alias wccp zone mode vlanid ip network broadcast status gwdetect mtu-override allowaccess log sflow-sampler ips-sniffer-mode ipmac spillover-threshold device-identification ipv6 vrrp inbandwidth outbandwidth egress-shaping-profile /
+      qw /alias wccp zone mode vlanid vrf ip network broadcast status gwdetect mtu-override allowaccess log sflow-sampler ips-sniffer-mode ipmac spillover-threshold device-identification ipv6 vrrp inbandwidth outbandwidth egress-shaping-profile /
      )
    {
       $self->set(name => $interface, key => $attr, value => "") ;
