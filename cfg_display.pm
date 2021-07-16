@@ -444,10 +444,10 @@ sub display_tp_vdom {
 "|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n"
      ;
    print
-"| interface (alias)         | zone          | physical / flags      |  vlan  |  fwd  |state |  speed  | admin access                                                                  |\n"
+"| interface (alias)         | zone          | physical / flags      |  vlan  |  vrf  | fwd  |state |  speed  | admin access                                                           |\n"
      ;
    print
-"|-------------------------------------------------------------------------------------------------------------------------------========----------------------------------------------|\n"
+"|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n"
      ;
 
    # Go through the different types of interfaces: aggregated,redundant, physical with associated vlans
@@ -673,11 +673,12 @@ sub display_tp_interface {
       $hash_warning_fwd{$forward_domain} = $href_forward_domain->{$forward_domain} ;
       }
 
-   printf "| %-26.26s| %-14.14s| %-22.22s| %-6.6s | %-5.5s | %-4.4s | %-7.7s | %-77.77s |\n",
+   printf "| %-26.26s| %-14.14s| %-22.22s| %-6.6s | %5.5s | %4.4s | %4.4s | %-7.7s | %-70.70s |\n",
      $disp_interface,
      $self->intfs->get(name => $interface, key => 'zone'),
      $self->intfs->get(name => $interface, key => 'interface') . $type,
      $self->intfs->get(name => $interface, key => 'vlanid'),
+     $self->intfs->get(name => $interface, key => 'vrf'),
      $forward_domain,
      $self->intfs->get(name => $interface, key => 'status'),
      $self->intfs->get(name => $interface, key => 'speed'),
@@ -804,7 +805,7 @@ sub display_nat_interface {
       $disp_interface .= " (" . $self->intfs->get(name => $interface, key => 'alias') . ")" ;
       }
 
-   printf "| %-26.26s| %-14.14s| %-22.22s| %-6.6s | %-4.4s | %-4.4s | %18.18s | %15.15s | %15.15s | %-4.4s |%-2.2s|%-2.2s| %-18.18s |\n",
+   printf "| %-26.26s| %-14.14s| %-22.22s| %-6.6s | %4.4s | %4.4s | %18.18s | %15.15s | %15.15s | %-4.4s |%-2.2s|%-2.2s| %-18.18s |\n",
      $disp_interface,
      $self->intfs->get(name => $interface, key => 'zone'),
      $self->intfs->get(name => $interface, key => 'interface') . $type,
