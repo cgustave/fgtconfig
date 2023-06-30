@@ -10,20 +10,7 @@ I have made this tool for my own use. It can be used at your own risk.
 Cedric GUSTAVE
 
 ##### Install :
-- use **'release'** branch from github  
-  The 'master' branch is mainly used for development and may not be always working.  
-  `git clone -b release git://github.com/cgustave/fgtconfig.git`
-
-- vim integration : map a command `:Fgtconfig` to open the config summary:  
-  In the ~/.vimrc:  
-  ~~~
-  :function! Func_fgtconfig()
-  :       let mycmd = "w! /tmp/fgtconfig.txt"
-  :       execute mycmd
-  :       ! (clear && cd ~/github/perl/fgtconfig && ./fgtconfig.pl -config /tmp/fgtconfig.txt -routing -ipsec -stat -color)
-  :endfunction
-  :command -nargs=0 Fgtconfig call Func_fgtconfig()
-  ~~~
+See INSTALL.md
 
 #### Description : 
 
@@ -52,6 +39,8 @@ Selection options:
 
 
 Display options:
+    -routing                 : display routing information section if relevant (suggest. yes)
+    -ipsec                   : display ipsec information sections if relevant (suggest. yes)
     -stat                    : display some statistics (suggest. yes)
     -color                   : ascii colors
     -html                    : HTML output
