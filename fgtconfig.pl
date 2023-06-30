@@ -51,7 +51,7 @@ if ($fullstats) {
    exit;
    }
  
-my $fgtconfig = cfg_fgtconfig->new(configfile => $config) ;
+my $fgtconfig = cfg_fgtconfig->new(configfile => $config, debug_level => $debug) ;
 
 # Set display flags
 $fgtconfig->dis->stats_flag('1')   if $stats ;
@@ -107,6 +107,8 @@ Selection options:
 
 
 Display options:
+    -routing                                                    : display routing information section if relevant (suggest. yes)
+    -ipsec                                                      : display ipsec information sections if relevant (suggest. yes)
     -stat                                                       : display some statistics (suggest. yes)
     -color                                                      : ascii colors
     -html                                                       : HTML output
