@@ -32,7 +32,7 @@
 	      <search key='proxy-fqdn' default='' /> 	      
            </match>
 
-	   <match release="^[456]\.">
+	   <match release="^[4567]\.">
 	      <scope path='config web-proxy explicit'/>
 	      <search key='status' default='disable' match='enable' /> 	      
            </match>

@@ -286,14 +286,14 @@
       </rule>
 
       <rule id='warn-destination-visibility' description='warn if destination-visibility is enabled' >
-         <match release='^[56]\.'>
+         <match release='^[567]\.'>
             <scope path='config system network-visibility' forceMatchOnFail='yes' />
             <search key='destination-visibility' value='enable' default='enable' match='enable'/>
          </match>
          <do warn="DST_VISIBILITY" toolTip="ip destination-visibility is enabled, might cause CPU increase, especially with HA (#227143, #227304)" />
       </rule>
       <rule id='warn-source-visibility' description='warn if source-visibility is enabled' debug='disable'>
-         <match release='^[56]\.'>
+         <match release='^[567]\.'>
             <scope path='config system network-visibility' forceMatchOnFail='yes' />
             <search key='source-visibility' value='enable' default='enable' match='enable' />
          </match>

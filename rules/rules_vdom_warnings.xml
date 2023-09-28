@@ -185,7 +185,7 @@
 <group name='modified.objects' description='warn group of important modified objects from their defaults'>
 
 	<rule id='warn.modified-schedule-always' description='warn if schedule always has been modified from default' debug='disable'>
-           <match release='^[56]\.'>
+           <match release='^[567]\.'>
               <scope path='config firewall schedule recurring'/>
 	      <scope edit='always'/>
 	      <search key='day' value='sunday monday tuesday wednesday thursday friday saturday'  default='sunday monday tuesday wednesday thursday friday saturday' match='sunday monday tuesday wednesday thursday friday saturday' negate='yes'/>
@@ -194,7 +194,7 @@
 	</rule>
 
         <rule id='warn.modified-address-all-subnet' description='warn if address all has been modified from default subnet' debug='disable'>
-           <match release='^[56]\.'>
+           <match release='^[567]\.'>
               <scope path='config firewall address'/>
 	      <scope edit='all'/>
 	      <search key='subnet' value='0.0.0.0 0.0.0.0' default='0.0.0.0 0.0.0.0' match='0.0.0.0 0.0.0.0' negate='yes'/>
@@ -203,7 +203,7 @@
         </rule>
 
         <rule id='warn.modified-address-all-subnet' description='warn if address all has been modified from default subnet' debug='disable'>
-           <match release='^[56]\.'>
+           <match release='^[567]\.'>
               <scope path='config firewall address'/>
 	      <scope edit='all'/>
 	      <search key='type' value='subnet' default='subnet' match='subnet' negate='yes'/>
