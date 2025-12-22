@@ -1032,7 +1032,7 @@ sub ipcidr_network_broadcast {
 
    warn "\n* Entering $obj:$subn with $ipmask=$ipmask" if $self->debug() ;
 
-   if (not($ipmask) eq '') {
+   if (defined($ipmask) and ($ipmask ne '')) {
       my @ip_mask = split(/\s/, $ipmask) ;
       my $ipnet   = new Net::Netmask($ip_mask[0], $ip_mask[1]) ;
       push @return, $self->cidr($ipmask) ;
